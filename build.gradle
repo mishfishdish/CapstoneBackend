@@ -37,3 +37,13 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.register('startTestEnv', Exec) {
+	description = 'Starts the Docker Compose test environment'
+	commandLine 'docker-compose', 'up', '-d'
+}
+
+tasks.register('stopTestEnv', Exec) {
+	description = 'Stops the Docker Compose test environment'
+	commandLine 'docker-compose', 'down'
+}
