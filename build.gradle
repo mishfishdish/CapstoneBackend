@@ -1,15 +1,9 @@
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer
-import com.bmuschko.gradle.docker.tasks.container.DockerStartContainer
-import com.bmuschko.gradle.docker.tasks.container.DockerStopContainer
-import com.bmuschko.gradle.docker.tasks.container.DockerRemoveContainer
-import com.github.dockerjava.api.model.ExposedPort
-import com.github.dockerjava.api.model.Ports
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.4'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id 'com.bmuschko.docker-remote-api' version '9.3.4'
+	id 'com.google.cloud.tools.jib' version '3.4.5'
 
 }
 
@@ -75,43 +69,12 @@ tasks.register('stopTestEnv', Exec) {
 }
 
 
-def imageName = 'my-springboot-app'
-def containerName = 'springboot_app_container'
+tasks.register('startApp') {
+	dependsOn 'jibDockerBuild'
 
-// Task to build Docker image
-tasks.register('buildDockerImage', DockerBuildImage) {
-	dependsOn 'clean', 'build'   // Runs 'clean' and then 'build'
-	inputDir = file('.')
-	images.add("${imageName}:latest")
-}
-
-import com.github.dockerjava.api.model.ExposedPort
-import com.github.dockerjava.api.model.Ports
-
-task createAppContainer(type: DockerCreateContainer) {
-	dependsOn buildDockerImage
-	targetImageId { "${imageName}:latest" }
-	containerName = containerName
-
-	exposedPorts = [ExposedPort.tcp(8080)]
-	hostConfig.portBindings = [
-			new Ports().bind(ExposedPort.tcp(8080), Ports.Binding.bindPort(8080))
-	]
-}
-
-// Task to start Docker container
-tasks.register('startApp', DockerStartContainer) {
-	dependsOn createAppContainer
-	targetContainerId { createAppContainer.getContainerId() }
-}
-
-// Task to stop Docker container
-tasks.register('stopApp', DockerStopContainer) {
-	targetContainerId { createAppContainer.getContainerId() }
-}
-
-// Task to remove Docker container
-tasks.register('removeAppContainer', DockerRemoveContainer) {
-	dependsOn stopApp
-	targetContainerId { createAppContainer.getContainerId() }
+	doLast {
+		exec {
+			commandLine 'docker', 'run', '-p', '8080:8080', '--name', 'my-app-container', 'my-app:latest'
+		}
+	}
 }
