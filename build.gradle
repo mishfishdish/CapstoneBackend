@@ -71,10 +71,20 @@ tasks.register('stopTestEnv', Exec) {
 
 tasks.register('startApp') {
 	dependsOn 'jibDockerBuild'
-
 	doLast {
 		exec {
-			commandLine 'docker', 'run', '-p', '8080:8080', '--name', 'my-app-container', 'my-app:latest'
+			commandLine 'docker', 'run', '-p', '8080:8080', '--name', 'my-app-container', 'project:0.0.1-SNAPSHOT'
+		}
+	}
+}
+
+tasks.register('stopApp') {
+	doLast {
+		exec {
+			commandLine 'docker', 'stop', 'my-app-container'
+		}
+		exec {
+			commandLine 'docker', 'rm', 'my-app-container'
 		}
 	}
 }
