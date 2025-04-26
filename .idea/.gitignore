@@ -12,3 +12,27 @@
 /misc.xml
 .idea/
 *.iml
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Gradle build output
+/build/
+
+# Eclipse files (if ever used)
+*.classpath
+*.project
+*.settings/
+
+# MacOS system files
+.DS_Store
+
+# Logs
+*.log
+
+# Environment files
+.env
+
+# Java
+/out/
