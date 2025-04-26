@@ -1,0 +1,106 @@
+/build/jib-cache/selectors/5d6b9fdc773a112df017d3a3083656b848425141f542c790386d7b3a3a087c5f
+/build/jib-cache/layers/981aa339e38b65cd128f0249ffbc375442061bded17f5a24324d1a3760afcd4a/7a1dd657dc651a2f6244008f309f1684b8ba584e850db64e2dc8aa34d37f75d5
+/build/jib-cache/selectors/93cf9acf690eb9b9ac79bb26b116a93f44551e281f5e7ff5bb68ff289357d74e
+/build/jib-cache/layers/5a6030b492de21018f5448965c097cdb50f7d5029155216d9e64a6934a75a936/926f632da0f68c2d7d2f67cadd8e5aa164d02a90943a44f2ff64ec41a89f33df
+/build/jib-cache/layers/25406007ebe58b404a8f9185c1f03cb1b320635eec8422f56b634c04255d2e43/a014f9966118aa78749b73e76073ed1e5c060c6cdf8868e3c03fe5cc1179bbf6
+/build/jib-cache/selectors/a626a95617dba59a060153df267dc34690c934ffeb261b55c9d28dbbf5a810a7
+/build/jib-cache/layers/6efb1729b9a2eb1d9385ec42dae0bf0be9dd66081e1767c6e0473ac1e058b223/acc9b582dfe79335d07ebc68a498ea6343747c40976287f11364ebb5fd4ad033
+/build/libs/app.jar
+/build/resources/main/application.yml
+/build/reports/tests/test/css/base-style.css
+/.gradle/buildOutputCleanup/buildOutputCleanup.lock
+/.gradle/buildOutputCleanup/cache.properties
+/build/jib-cache/selectors/cc477ee24fe861256414f92d16ae22215deb11cd1875a3af7472109c3ae2147d
+/.gradle/8.2.1/checksums/checksums.lock
+/.gradle/8.5/checksums/checksums.lock
+/.gradle/8.13/checksums/checksums.lock
+/build/reports/tests/test/packages/com.fit3161.project.html
+/build/reports/tests/test/classes/com.fit3161.project.ProjectApplicationTests.html
+/.gradle/8.2.1/dependencies-accessors/dependencies-accessors.lock
+/.gradle/8.5/dependencies-accessors/dependencies-accessors.lock
+/.gradle/8.5/executionHistory/executionHistory.bin
+/.gradle/8.13/executionHistory/executionHistory.bin
+/.gradle/8.5/executionHistory/executionHistory.lock
+/.gradle/8.13/executionHistory/executionHistory.lock
+/.gradle/file-system.probe
+/.gradle/8.5/fileHashes/fileHashes.bin
+/.gradle/8.13/fileHashes/fileHashes.bin
+/.gradle/8.2.1/fileHashes/fileHashes.lock
+/.gradle/8.5/fileHashes/fileHashes.lock
+/.gradle/8.13/fileHashes/fileHashes.lock
+/.gradle/8.2.1/dependencies-accessors/gc.properties
+/.gradle/8.2.1/gc.properties
+/.gradle/8.5/dependencies-accessors/gc.properties
+/.gradle/8.5/gc.properties
+/.gradle/8.13/gc.properties
+/.gradle/vcs-1/gc.properties
+/build/reports/tests/test/index.html
+/build/jib-cache/jib-classpath-file
+/build/jib-image.digest
+/build/jib-image.id
+/build/jib-image.json
+/build/jib-cache/jib-main-class-file
+/.gradle/8.2.1/fileChanges/last-build.bin
+/.gradle/8.5/fileChanges/last-build.bin
+/.gradle/8.13/fileChanges/last-build.bin
+/build/tmp/bootJar/MANIFEST.MF
+/build/tmp/jar/MANIFEST.MF
+/.gradle/8.2.1/checksums/md5-checksums.bin
+/.gradle/8.5/checksums/md5-checksums.bin
+/.gradle/8.13/checksums/md5-checksums.bin
+/build/test-results/test/binary/output.bin
+/build/test-results/test/binary/output.bin.idx
+/.gradle/buildOutputCleanup/outputFiles.bin
+/build/tmp/compileJava/previous-compilation-data.bin
+/build/tmp/compileTestJava/previous-compilation-data.bin
+/build/libs/project-0.0.1-SNAPSHOT-plain.jar
+/build/classes/java/main/com/fit3161/project/ProjectApplication.class
+/build/classes/java/test/com/fit3161/project/ProjectApplicationTests.class
+/build/reports/tests/test/js/report.js
+/build/resolvedMainClassName
+/.gradle/8.5/fileHashes/resourceHashesCache.bin
+/.gradle/8.13/fileHashes/resourceHashesCache.bin
+/build/test-results/test/binary/results.bin
+/.gradle/8.2.1/checksums/sha1-checksums.bin
+/.gradle/8.5/checksums/sha1-checksums.bin
+/.gradle/8.13/checksums/sha1-checksums.bin
+/build/reports/tests/test/css/style.css
+/build/test-results/test/TEST-com.fit3161.project.ProjectApplicationTests.xml
+# Default ignored files
+/shelf/
+/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Environment-dependent path to Maven home directory
+/mavenHomeManager.xml
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+/gradle.xml
+/misc.xml
+.idea/
+*.iml
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Gradle build output
+/build/
+
+# Eclipse files (if ever used)
+*.classpath
+*.project
+*.settings/
+
+# MacOS system files
+.DS_Store
+
+# Logs
+*.log
+
+# Environment files
+.env
+
+# Java
+/out/
