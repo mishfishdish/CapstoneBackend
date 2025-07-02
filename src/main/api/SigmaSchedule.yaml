@@ -1,0 +1,83 @@
+openapi: 3.0.0
+info:
+  title: SigmaSchedule API
+  version: 1.0.0
+paths:
+  /api/auth:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - username
+                - email
+                - password
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Invalid input
+
+  /api/clubs:
+    post:
+      summary: Create a new club
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+              required:
+                - name
+                - description
+      responses:
+        '201':
+          description: Club created
+        '400':
+          description: Invalid club data
+
+  /api/clubs/{clubId}/invite:
+    post:
+      summary: Invite a user to a club
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+              required:
+                - email
+      responses:
+        '200':
+          description: Invitation sent
+        '404':
+          description: Club not found
+        '400':
+          description: Invalid request
