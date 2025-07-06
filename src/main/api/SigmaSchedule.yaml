@@ -15,6 +15,10 @@ paths:
               properties:
                 username:
                   type: string
+                firstname:
+                  type: string
+                lastname:
+                  type: string
                 email:
                   type: string
                   format: email
@@ -22,6 +26,8 @@ paths:
                   type: string
               required:
                 - username
+                - firstname
+                - lastname
                 - email
                 - password
       responses:
