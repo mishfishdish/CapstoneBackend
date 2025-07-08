@@ -1,4 +1,7 @@
 package com.fit3161.project.database.csv;
 
-public class CsvRepository {
+import com.fit3161.project.database.club.ClubRecord;
+import org.springframework.data.repository.CrudRepository;
+
+public interface CsvRepository extends CrudRepository<CsvRecord, Long> {
 }

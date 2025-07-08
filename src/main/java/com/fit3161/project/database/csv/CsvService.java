@@ -1,4 +1,27 @@
 package com.fit3161.project.database.csv;
 
-public class CsvService {
+import com.fit3161.project.database.club.ClubRecord;
+import com.fit3161.project.database.club.ClubRespository;
+
+import java.util.function.Consumer;
+
+
+
+public interface CsvService {
+
+    CsvRepository getCsvRepository();
+
+    default CsvRecord saveCsvRepository(final CsvRecord csvRecord){
+        return getCsvRepository().save(csvRecord);
+    }
+
+    default CsvRecord createCsvRecord(final Consumer<CsvRecord.CsvRecordBuilder> consumer){
+        final CsvRecord.CsvRecordBuilder csvRecordBuilder = new CsvRecord.CsvRecordBuilder();
+        consumer.accept(csvRecordBuilder);
+        return getCsvRepository().save(csvRecordBuilder.build());
+    }
+
 }
+
+
+

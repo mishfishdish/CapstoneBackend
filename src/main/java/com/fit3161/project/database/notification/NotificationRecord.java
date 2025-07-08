@@ -1,6 +1,6 @@
 package com.fit3161.project.database.notification;
 
-import com.fit3161.project.database.event.EventRecord;
+import com.fit3161.project.database.event.daos.EventRecord;
 import com.fit3161.project.database.tasks.TaskRecord;
 import com.fit3161.project.database.user.UserRecord;
 import jakarta.persistence.*;

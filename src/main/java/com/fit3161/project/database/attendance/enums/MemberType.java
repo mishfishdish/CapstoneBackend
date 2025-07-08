@@ -1,4 +1,4 @@
-package com.fit3161.project.database.event.enums;
+package com.fit3161.project.database.attendance.enums;
 
 public enum MemberType {
     MANAGER,

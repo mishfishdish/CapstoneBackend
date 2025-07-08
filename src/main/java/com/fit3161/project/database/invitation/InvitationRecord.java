@@ -1,14 +1,11 @@
 package com.fit3161.project.database.invitation;
 
 import com.fit3161.project.database.club.ClubRecord;
-import com.fit3161.project.database.event.EventClubsId;
-import com.fit3161.project.database.event.EventRecord;
 import com.fit3161.project.database.invitation.enums.Role;
 import com.fit3161.project.database.invitation.enums.Status;
 import com.fit3161.project.database.user.UserRecord;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 

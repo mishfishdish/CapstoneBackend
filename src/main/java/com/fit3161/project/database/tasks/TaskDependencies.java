@@ -1,7 +1,7 @@
 package com.fit3161.project.database.tasks;
 
 import com.fit3161.project.database.club.ClubRecord;
-import com.fit3161.project.database.event.EventRecord;
+import com.fit3161.project.database.event.daos.EventRecord;
 import jakarta.persistence.*;
 import lombok.*;
 

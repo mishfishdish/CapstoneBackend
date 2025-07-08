@@ -1,11 +1,8 @@
-package com.fit3161.project.database.event;
+package com.fit3161.project.database.event.daos;
 
 import com.fit3161.project.database.club.ClubRecord;
-import com.fit3161.project.database.user.UserRecord;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.io.Serializable;
 
 @Entity
 @Table(name = "EVENT_CLUBS")

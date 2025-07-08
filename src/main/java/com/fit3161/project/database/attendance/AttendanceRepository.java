@@ -1,4 +1,6 @@
 package com.fit3161.project.database.attendance;
 
-public class AttendanceRepository {
+import org.springframework.data.repository.CrudRepository;
+
+public interface AttendanceRepository extends CrudRepository<AttendanceRecord, Long> {
 }

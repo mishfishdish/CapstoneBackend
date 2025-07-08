@@ -1,12 +1,9 @@
 package com.fit3161.project.database.csv;
 
-import com.fit3161.project.database.event.EventRecord;
-import com.fit3161.project.database.event.enums.MemberType;
 import com.fit3161.project.database.user.UserRecord;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 

@@ -1,11 +1,8 @@
 package com.fit3161.project.database.qr;
 
-import com.fit3161.project.database.event.EventRecord;
-import com.fit3161.project.database.user.UserRecord;
+import com.fit3161.project.database.event.daos.EventRecord;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "EVENT_QR")
