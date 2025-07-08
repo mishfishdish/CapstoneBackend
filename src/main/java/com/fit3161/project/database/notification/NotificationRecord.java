@@ -1,7 +1,7 @@
 package com.fit3161.project.database.notification;
 
 import com.fit3161.project.database.event.EventRecord;
-import com.fit3161.project.database.tasks.TasksRecord;
+import com.fit3161.project.database.tasks.TaskRecord;
 import com.fit3161.project.database.user.UserRecord;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,7 +26,7 @@ public class NotificationRecord {
 
     @ManyToOne
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", nullable = false)
-    private TasksRecord task;
+    private TaskRecord task;
 
     @ManyToOne
     @JoinColumn(name = "EVENT_ID", referencedColumnName = "EVENT_ID", nullable = false)

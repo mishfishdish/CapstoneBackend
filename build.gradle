@@ -48,43 +48,61 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
+	implementation 'org.flywaydb:flyway-core:10.14.0' // or latest
+
 	runtimeOnly 'org.postgresql:postgresql'
+	implementation 'org.flywaydb:flyway-database-postgresql:10.20.1'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
-tasks.register('startTestEnv', Exec) {
-	description = 'Starts the Docker Compose test environment'
-	commandLine 'docker-compose', 'up', '-d'
-}
-
-tasks.register('stopTestEnv', Exec) {
-	description = 'Stops the Docker Compose test environment'
-	commandLine 'docker-compose', 'down'
-}
-
-
-tasks.register('startApp') {
-	dependsOn 'jibDockerBuild'
-	doLast {
-		exec {
-			commandLine 'docker', 'run', '-p', '8080:8080', '--name', 'my-app-container', 'project:0.0.1-SNAPSHOT'
+configurations.all {
+	resolutionStrategy.eachDependency { details ->
+		if (details.requested.group == 'org.flywaydb') {
+			details.useVersion '10.14.0'
 		}
 	}
 }
 
-tasks.register('stopApp') {
+tasks.register("startTestEnvironment") {
+	group = "docker"
+	description = "Spin up Postgres container"
 	doLast {
 		exec {
-			commandLine 'docker', 'stop', 'my-app-container'
+			commandLine("docker","compose", "-f", "docker-compose.yml", "up", "-d")
 		}
+	}
+}
+
+tasks.register("startApp") {
+	group = "docker"
+	description = "Build and run app container"
+	dependsOn("jibDockerBuild")
+	doLast {
 		exec {
-			commandLine 'docker', 'rm', 'my-app-container'
+			commandLine(
+					"docker", "run",
+					"--rm",
+					"--platform=linux/amd64",           // 🔧 Force x86_64 if needed
+					"--network=app-network",
+					"-p", "8080:8080",
+					"springboot-app"
+			)
 		}
+	}
+}
+
+jib {
+	to {
+		image = 'springboot-app'
+	}
+	container {
+		ports = ['8080']
+		environment = [
+				SPRING_DATASOURCE_URL     : 'jdbc:postgresql://postgres:5432/testdb',
+				SPRING_DATASOURCE_USERNAME: 'testuser',
+				SPRING_DATASOURCE_PASSWORD: 'testpass'
+		]
 	}
 }

@@ -20,13 +20,13 @@ public class EventClubs {
     private EventClubsId id;
 
     @ManyToOne
-    @Column(name = "EVENT_ID")
-    @JoinColumn(name = "EVENT_ID", referencedColumnName = "EVENT_ID", nullable = false)
+    @MapsId("eventId") // match field name in EventClubsId
+    @JoinColumn(name = "EVENT_ID", nullable = false)
     private EventRecord event;
 
     @ManyToOne
-    @Column(name = "CLUB_ID")
-    @JoinColumn(name = "CLUB_ID", referencedColumnName = "CLUB_ID", nullable = false)
+    @MapsId("clubId") // match field name in EventClubsId
+    @JoinColumn(name = "CLUB_ID", nullable = false)
     private ClubRecord club;
 
 }

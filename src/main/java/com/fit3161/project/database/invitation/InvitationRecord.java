@@ -30,7 +30,6 @@ public class InvitationRecord {
     private String email;
 
     @ManyToOne
-    @Column(name = "CLUB_ID")
     @JoinColumn(name = "CLUB_ID", referencedColumnName = "CLUB_ID", nullable = false)
     private ClubRecord club;
 
@@ -38,7 +37,6 @@ public class InvitationRecord {
     private Role role;
 
     @ManyToOne
-    @Column(name = "INVITED_BY")
     @JoinColumn(name = "INVITED_BY", referencedColumnName = "USER_ID", nullable = false)
     private UserRecord user;
 

@@ -61,9 +61,10 @@ CREATE TABLE events (
 
 -- TASK_DEPENDENCIES TABLE
 CREATE TABLE task_dependencies (
-                                   id UUID PRIMARY KEY,
                                    task_id UUID REFERENCES tasks(task_id),
-                                   depends_on_event_id UUID REFERENCES events(event_id)
+                                   club_id UUID REFERENCES clubs(club_id),
+                                   depends_on_event_id UUID REFERENCES events(event_id),
+                                   PRIMARY KEY (task_id, club_id)
 );
 
 -- EVENT_CLUBS TABLE

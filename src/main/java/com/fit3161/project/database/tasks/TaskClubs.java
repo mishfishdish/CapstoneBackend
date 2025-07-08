@@ -1,21 +1,20 @@
 package com.fit3161.project.database.tasks;
 
 import com.fit3161.project.database.club.ClubRecord;
-import com.fit3161.project.database.event.EventRecord;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "task_dependencies")
+@Table(name = "task_clubs")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TaskDependencies {
+public class TaskClubs {
 
     @EmbeddedId
-    private TaskDependencyId id;
+    private TaskClubId id;
 
     @ManyToOne
     @MapsId("taskId")
@@ -26,8 +25,4 @@ public class TaskDependencies {
     @MapsId("clubId")
     @JoinColumn(name = "club_id", referencedColumnName = "club_id")
     private ClubRecord club;
-
-    @ManyToOne
-    @JoinColumn(name = "depends_on_event_id", referencedColumnName = "event_id")
-    private EventRecord dependsOnEvent;
 }
