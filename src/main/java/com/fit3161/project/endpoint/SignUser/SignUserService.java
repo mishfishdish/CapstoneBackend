@@ -1,20 +1,20 @@
-package com.fit3161.project.endpoint.CreateUser;
+package com.fit3161.project.endpoint.SignUser;
 
 import com.fit3161.project.database.Database;
-import com.fit3161.project.database.club.ClubRecord;
 import com.fit3161.project.database.user.UserRecord;
-import com.fit3161.project.endpoint.CreateClub.request.CreateClubRequest;
 import com.fit3161.project.endpoint.CreateUser.request.UserRequest;
+import com.fit3161.project.endpoint.SignUser.request.SignRequest;
 import com.fit3161.project.managers.ClientManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Getter
 @RequiredArgsConstructor
-public class CreateUserService {
+public class SignUserService {
     private final Database database;
     private final ClientManager client;
 
@@ -23,10 +23,11 @@ public class CreateUserService {
     }
 
     public String getResponse(){
-        final UserRequest request = client.getRequestAs(UserRequest.class);
-        final UserRecord record = database.createUser(user
-                -> user.firstName(request.getFirstName()).lastName(request.getLastName()).email(request.getEmail()).passwordHash(request.getPassword()));
-        database.saveUserRecord(record);
-        return null;
+        final SignRequest request = client.getRequestAs(SignRequest.class);
+        boolean exists = database.userExists(request.getEmail(), request.getPassword());
+        if (exists) {
+            return null;
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 }

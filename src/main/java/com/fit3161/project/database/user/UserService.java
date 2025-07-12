@@ -23,6 +23,10 @@ public interface UserService {
         return getUserRepository().save(userRecordBuilder.build());
     }
 
+    default Boolean userExists(String username, String password){
+        return getUserRepository().existsByEmailAndPasswordHash(username, password);
+    }
+
     default UserClubs addUserToClub(final Consumer<UserClubs.UserClubsBuilder> consumer){
         final UserClubs.UserClubsBuilder userClubsBuilder = new UserClubs.UserClubsBuilder();
         consumer.accept(userClubsBuilder);
