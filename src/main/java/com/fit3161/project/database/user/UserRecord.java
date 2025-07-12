@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -19,7 +20,7 @@ public class UserRecord {
 
     @Id
     @Column(name = "user_id", nullable = false, updatable = false)
-    private Long userId;
+    private UUID userId;
 
     @Column(name = "first_name", length = 100)
     private String firstName;

@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "CLUB_INVITATIONS")
@@ -21,7 +22,7 @@ public class InvitationRecord {
     @Id
     @Column(name = "INVITATION_ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long invitationId;
+    private UUID invitationId;
 
     @Column(name = "EMAIL")
     private String email;

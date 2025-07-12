@@ -24,6 +24,7 @@ public class CreateClubController {
 
     @PostMapping("/api/clubs")
     public ResponseEntity<String> handler(@Valid @RequestBody CreateClubRequest request) {
+        System.out.println("MICHELLE");
         client.setRequest(request);
         return new ResponseEntity<>(clubService.getResponse(),clubService.getStatus());
     }

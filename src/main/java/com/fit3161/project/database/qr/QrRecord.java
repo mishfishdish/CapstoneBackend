@@ -4,6 +4,8 @@ import com.fit3161.project.database.event.daos.EventRecord;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "EVENT_QR")
 @Builder
@@ -15,7 +17,7 @@ public class QrRecord {
     @Id
     @Column(name = "QR_ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long qrId;
+    private UUID qrId;
 
     @ManyToOne
     @JoinColumn(name = "EVENT_ID", referencedColumnName = "EVENT_ID", nullable = false)

@@ -6,6 +6,8 @@ import com.fit3161.project.database.user.UserRecord;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "NOTIFICATIONS")
 @Builder
@@ -18,7 +20,7 @@ public class NotificationRecord {
     @Id
     @Column(name = "NOTIFICATION_ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long notificationId;
+    private UUID notificationId;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", nullable = false)

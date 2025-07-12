@@ -5,19 +5,20 @@ import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 @Embeddable
 public class TaskDependencyId implements Serializable {
 
     @Column(name = "task_id")
-    private Long taskId;
+    private UUID taskId;
 
     @Column(name = "club_id")
-    private Long clubId;
+    private UUID clubId;
 
     public TaskDependencyId() {}
 
-    public TaskDependencyId(Long taskId, Long clubId) {
+    public TaskDependencyId(UUID taskId, UUID clubId) {
         this.taskId = taskId;
         this.clubId = clubId;
     }

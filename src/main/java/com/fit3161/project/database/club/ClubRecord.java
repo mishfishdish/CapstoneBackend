@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "CLUBS")
@@ -19,7 +20,7 @@ public class ClubRecord {
     @Id
     @Column(name = "CLUB_ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long clubId;
+    private UUID clubId;
 
     @Column(name = "NAME")
     private String name;

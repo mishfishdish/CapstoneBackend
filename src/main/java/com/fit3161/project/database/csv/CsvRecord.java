@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "CSV_IMPORTS")
@@ -19,7 +20,7 @@ public class CsvRecord{
     @Id
     @Column(name = "IMPORT_ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long importId;
+    private UUID importId;
 
     @ManyToOne
     @JoinColumn(name = "UPLOADED_BY", referencedColumnName = "USER_ID", nullable = false)

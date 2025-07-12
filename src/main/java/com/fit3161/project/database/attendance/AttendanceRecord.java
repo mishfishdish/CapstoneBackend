@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "ATTENDANCE")
@@ -20,7 +21,7 @@ public class AttendanceRecord {
     @Id
     @Column(name = "ATTENDANCE_ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long attendanceId;
+    private UUID attendanceId;
 
     @OneToOne
     @JoinColumn(name = "EVENT_ID", referencedColumnName = "EVENT_ID", nullable = false)

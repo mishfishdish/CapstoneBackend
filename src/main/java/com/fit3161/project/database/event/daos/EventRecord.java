@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "EVENTS")
@@ -17,7 +18,7 @@ public class EventRecord {
     @Id
     @Column(name = "EVENT_ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long eventId;
+    private UUID eventId;
 
     @Column(name = "TITLE")
     private String title;
