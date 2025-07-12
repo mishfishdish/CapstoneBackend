@@ -1,9 +1,6 @@
-package com.fit3161.project.endpoint.SignUser;
+package com.fit3161.project.endpoint.onboarding.AddToClub;
 
-import com.fit3161.project.endpoint.CreateClub.request.CreateClubRequest;
-import com.fit3161.project.endpoint.CreateUser.CreateUserService;
-import com.fit3161.project.endpoint.CreateUser.request.UserRequest;
-import com.fit3161.project.endpoint.SignUser.request.SignRequest;
+import com.fit3161.project.endpoint.onboarding.AddToClub.request.AddClubRequest;
 import com.fit3161.project.managers.ClientManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +15,14 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(produces = APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-public class SignUserController {
+public class AddToClubController {
 
-    private final SignUserService userService;
+    private final AddToClubService addToClubService;
     private final ClientManager client;
 
-    @PostMapping("/api/auth/login")
-    public ResponseEntity<String> handler(@Valid @RequestBody SignRequest request) {
+    @PostMapping("/api/clubs/user")
+    public ResponseEntity<String> handler(@Valid @RequestBody AddClubRequest request) {
         client.setRequest(request);
-        return new ResponseEntity<>(userService.getResponse(),userService.getStatus());
+        return new ResponseEntity<>(addToClubService.getResponse(),addToClubService.getStatus());
     }
 }

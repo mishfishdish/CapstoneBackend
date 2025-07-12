@@ -1,8 +1,6 @@
-package com.fit3161.project.endpoint.CreateClub;
+package com.fit3161.project.endpoint.onboarding.CreateUser;
 
-import com.fit3161.project.endpoint.CreateClub.request.CreateClubRequest;
-import com.fit3161.project.endpoint.CreateUser.CreateUserService;
-import com.fit3161.project.endpoint.CreateUser.request.UserRequest;
+import com.fit3161.project.endpoint.onboarding.CreateUser.request.UserRequest;
 import com.fit3161.project.managers.ClientManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

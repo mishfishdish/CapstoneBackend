@@ -1,10 +1,8 @@
-package com.fit3161.project.endpoint.CreateUser;
+package com.fit3161.project.endpoint.onboarding.CreateUser;
 
 import com.fit3161.project.database.Database;
-import com.fit3161.project.database.club.ClubRecord;
 import com.fit3161.project.database.user.UserRecord;
-import com.fit3161.project.endpoint.CreateClub.request.CreateClubRequest;
-import com.fit3161.project.endpoint.CreateUser.request.UserRequest;
+import com.fit3161.project.endpoint.onboarding.CreateUser.request.UserRequest;
 import com.fit3161.project.managers.ClientManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

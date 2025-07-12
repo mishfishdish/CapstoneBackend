@@ -1,8 +1,8 @@
-package com.fit3161.project.endpoint.CreateClub;
+package com.fit3161.project.endpoint.onboarding.CreateClub;
 
 import com.fit3161.project.database.Database;
 import com.fit3161.project.database.club.ClubRecord;
-import com.fit3161.project.endpoint.CreateClub.request.CreateClubRequest;
+import com.fit3161.project.endpoint.onboarding.CreateClub.request.CreateClubRequest;
 import com.fit3161.project.managers.ClientManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

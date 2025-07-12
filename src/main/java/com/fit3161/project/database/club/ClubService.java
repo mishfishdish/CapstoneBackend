@@ -1,5 +1,6 @@
 package com.fit3161.project.database.club;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public interface ClubService {
@@ -14,6 +15,10 @@ public interface ClubService {
         final ClubRecord.ClubRecordBuilder clubRecordBuilder = new ClubRecord.ClubRecordBuilder();
         consumer.accept(clubRecordBuilder);
         return getClubRepository().save(clubRecordBuilder.build());
+    }
+
+    default ClubRecord findClub(final UUID clubId){
+        return getClubRepository().findClubRecordByClubId(clubId);
     }
 
 }

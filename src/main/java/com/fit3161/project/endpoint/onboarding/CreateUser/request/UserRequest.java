@@ -1,4 +1,4 @@
-package com.fit3161.project.endpoint.CreateUser.request;
+package com.fit3161.project.endpoint.onboarding.CreateUser.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

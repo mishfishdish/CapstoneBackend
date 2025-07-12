@@ -1,4 +1,4 @@
-package com.fit3161.project.endpoint.CreateClub.request;
+package com.fit3161.project.endpoint.onboarding.CreateClub.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

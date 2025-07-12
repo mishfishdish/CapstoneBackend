@@ -3,8 +3,10 @@ package com.fit3161.project.database.user;
 import com.fit3161.project.database.club.ClubRecord;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user_clubs")
@@ -15,16 +17,15 @@ import java.time.LocalDateTime;
 @Builder
 public class UserClubs {
 
-    @EmbeddedId
-    private UserClubId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @ManyToOne
-    @MapsId("userId")
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private UserRecord user;
 
     @ManyToOne
-    @MapsId("clubId")
     @JoinColumn(name = "club_id", referencedColumnName = "club_id")
     private ClubRecord club;
 
@@ -32,5 +33,8 @@ public class UserClubs {
     private String roleInClub; // Optional: turn into enum for 'admin'/'member'
 
     @Column(name = "joined_at")
+    @CreationTimestamp
     private LocalDateTime joinedAt;
-    }
+
+
+}

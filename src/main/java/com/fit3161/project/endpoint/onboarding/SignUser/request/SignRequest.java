@@ -1,4 +1,4 @@
-package com.fit3161.project.endpoint.SignUser.request;
+package com.fit3161.project.endpoint.onboarding.SignUser.request;
 
 import lombok.Data;
 

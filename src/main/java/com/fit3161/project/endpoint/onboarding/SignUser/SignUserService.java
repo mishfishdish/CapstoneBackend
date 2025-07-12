@@ -1,9 +1,7 @@
-package com.fit3161.project.endpoint.SignUser;
+package com.fit3161.project.endpoint.onboarding.SignUser;
 
 import com.fit3161.project.database.Database;
-import com.fit3161.project.database.user.UserRecord;
-import com.fit3161.project.endpoint.CreateUser.request.UserRequest;
-import com.fit3161.project.endpoint.SignUser.request.SignRequest;
+import com.fit3161.project.endpoint.onboarding.SignUser.request.SignRequest;
 import com.fit3161.project.managers.ClientManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
