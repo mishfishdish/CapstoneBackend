@@ -1,8 +1,5 @@
 package com.fit3161.project.database.csv;
 
-import com.fit3161.project.database.club.ClubRecord;
-import com.fit3161.project.database.club.ClubRespository;
-
 import java.util.function.Consumer;
 
 
