@@ -121,12 +121,6 @@ paths:
   /api/clubs/{clubId}/invite:
     post:
       summary: Invite a user to a club
-      parameters:
-        - in: path
-          name: clubId
-          required: true
-          schema:
-            type: string
       requestBody:
         required: true
         content:
@@ -137,8 +131,17 @@ paths:
                 email:
                   type: string
                   format: email
+                inviter:
+                  type: string
+                clubId:
+                  type: string
+                role:
+                  type: string
               required:
                 - email
+                - inviter
+                - clubId
+                - role
       responses:
         '200':
           description: Invitation sent

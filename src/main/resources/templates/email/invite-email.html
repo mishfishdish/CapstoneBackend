@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>You're invited to SigmaSchedule</title>
+</head>
+<body style="font-family: Arial, sans-serif; text-align: center; padding: 2rem; background-color: #ffffff; color: #222;">
+<h1 style="font-size: 2.5rem;">Hi 👋</h1>
+
+<h2 style="font-weight: normal;">
+    Join your team on <strong>SigmaSchedule</strong>
+</h2>
+
+<p style="font-size: 1.2rem;">
+    You were invited to the club <em th:text="${clubName}">[Club Name]</em>
+</p>
+
+<a th:href="@{${inviteLink}}" style="
+        display: inline-block;
+        background-color: #222;
+        color: white;
+        padding: 1rem 2rem;
+        text-decoration: none;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+        font-size: 1.2rem;
+    ">
+    Accept Invite
+</a>
+
+<h3 style="margin-top: 3rem;">What's SigmaSchedule?</h3>
+<p style="max-width: 500px; margin: auto;">
+    Sigma Schedule is a university-wide service allowing clubs and teams to schedule activities,
+    take attendance, set tasks, and much, much more.
+</p>
+</body>
+</html>

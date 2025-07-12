@@ -11,6 +11,14 @@ services:
       - "5432:5432"
     networks:
       - app-network
+  smtp:
+    image: mailhog/mailhog
+    container_name: smtp
+    ports:
+      - "1025:1025"   # SMTP port
+      - "8025:8025"   # Web UI
+    networks:
+      - app-network
 
 networks:
   app-network:

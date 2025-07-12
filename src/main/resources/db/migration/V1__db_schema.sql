@@ -127,15 +127,3 @@ CREATE TABLE audit_logs (
                             timestamp TIMESTAMP,
                             details JSONB
 );
-
--- CLUB_INVITATIONS TABLE
-CREATE TABLE club_invitations (
-                                  invitation_id UUID PRIMARY KEY,
-                                  email VARCHAR(100) NOT NULL,
-                                  club_id UUID REFERENCES clubs(club_id),
-                                  role_offered VARCHAR(10), -- 'admin' or 'member'
-                                  invited_by UUID REFERENCES users(user_id),
-                                  status VARCHAR(20), -- 'pending', 'accepted', 'declined', 'expired'
-                                  sent_at TIMESTAMP,
-                                  responded_at TIMESTAMP
-);

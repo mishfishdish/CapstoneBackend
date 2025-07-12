@@ -12,3 +12,22 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+  mail:
+    host: smtp
+    port: 1025
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+app:
+  jwt-secret: 7WZgM8lrfzEp9yJVFqAD3vUMRxKzP5tCBwqYxLZd5Tk=
