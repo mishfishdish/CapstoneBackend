@@ -1,6 +1,8 @@
 package com.fit3161.project.endpoint.onboarding.SignUser;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fit3161.project.endpoint.onboarding.SignUser.request.SignRequest;
+import com.fit3161.project.endpoint.onboarding.SignUser.response.SignResponse;
 import com.fit3161.project.managers.ClientManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ public class SignUserController {
     private final ClientManager client;
 
     @PostMapping("/api/auth/login")
-    public ResponseEntity<String> handler(@Valid @RequestBody SignRequest request) {
+    public ResponseEntity<String> handler(@Valid @RequestBody SignRequest request) throws JsonProcessingException {
         client.setRequest(request);
         return new ResponseEntity<>(userService.getResponse(),userService.getStatus());
     }

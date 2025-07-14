@@ -1,5 +1,6 @@
 package com.fit3161.project.endpoint.onboarding.CreateUser;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fit3161.project.endpoint.onboarding.CreateUser.request.UserRequest;
 import com.fit3161.project.managers.ClientManager;
 import jakarta.validation.Valid;
@@ -21,7 +22,7 @@ public class CreateUserController {
     private final ClientManager client;
 
     @PostMapping("/api/auth")
-    public ResponseEntity<String> handler(@Valid @RequestBody UserRequest request) {
+    public ResponseEntity<String> handler(@Valid @RequestBody UserRequest request) throws JsonProcessingException {
         client.setRequest(request);
         return new ResponseEntity<>(userService.getResponse(),userService.getStatus());
     }
