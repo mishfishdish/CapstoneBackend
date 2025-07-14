@@ -8,6 +8,13 @@ import jakarta.annotation.PostConstruct; // ✅ MUST be jakarta.annotation (not 
 public class ProjectApplication {
 
 	public static void main(String[] args) {
+		System.out.println("🔍 ENV DEBUG >>>");
+		System.out.println("🔍 DB_HOST = " + System.getenv("DB_HOST"));
+		System.out.println("🔍 DB_USER = " + System.getenv("DB_USER"));
+		System.out.println("🔍 DB_PASSWORD = " + System.getenv("DB_PASSWORD"));
+		System.out.println("🔍 MAIL_USER = " + System.getenv("MAIL_USER"));
+		System.out.println("🔍 JWT_SECRET = " + System.getenv("JWT_SECRET"));
+		System.out.println("🔍 <<< END ENV DEBUG");
 		SpringApplication.run(ProjectApplication.class, args);
 	}
 
