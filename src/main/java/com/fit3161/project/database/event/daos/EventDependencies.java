@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "EVENT_CLUBS")
+@Table(name = "EVENT_DEPENDENCIES")
 @Builder
 @Setter
 @Getter

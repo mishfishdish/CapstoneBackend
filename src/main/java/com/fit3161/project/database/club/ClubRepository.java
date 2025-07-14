@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;
 
-public interface ClubRepository extends CrudRepository<ClubRecord, Long> {
+public interface ClubRepository extends CrudRepository<ClubRecord, UUID> {
     ClubRecord findClubRecordByClubId(UUID clubId);
 
 }

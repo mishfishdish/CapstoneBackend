@@ -5,5 +5,7 @@ import com.fit3161.project.database.event.daos.EventClubsId;
 import com.fit3161.project.database.event.daos.EventDependencies;
 import org.springframework.data.repository.CrudRepository;
 
-public interface EventDependencyRepository extends CrudRepository<EventDependencies, Long> {
+import java.util.UUID;
+
+public interface EventDependencyRepository extends CrudRepository<EventDependencies, UUID> {
 }

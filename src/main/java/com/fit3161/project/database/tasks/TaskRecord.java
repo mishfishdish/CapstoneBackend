@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tasks")
@@ -19,7 +20,7 @@ public class TaskRecord {
 
     @Id
     @Column(name = "task_id", nullable = false, updatable = false)
-    private Long taskId;
+    private UUID taskId;
 
     @Column(name = "title", length = 100)
     private String title;

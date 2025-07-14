@@ -5,6 +5,8 @@ import com.fit3161.project.database.event.daos.EventRecord;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "task_dependencies")
 @Getter
@@ -14,16 +16,14 @@ import lombok.*;
 @Builder
 public class TaskDependencies {
 
-    @EmbeddedId
-    private TaskDependencyId id;
+    @Id
+    private UUID id;
 
     @ManyToOne
-    @MapsId("taskId")
     @JoinColumn(name = "task_id", referencedColumnName = "task_id")
     private TaskRecord task;
 
     @ManyToOne
-    @MapsId("clubId")
     @JoinColumn(name = "club_id", referencedColumnName = "club_id")
     private ClubRecord club;
 

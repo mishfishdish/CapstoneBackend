@@ -4,5 +4,7 @@ import com.fit3161.project.database.event.daos.EventDependencies;
 import com.fit3161.project.database.event.daos.EventRecord;
 import org.springframework.data.repository.CrudRepository;
 
-public interface EventRecordRepository extends CrudRepository<EventRecord, Long> {
+import java.util.UUID;
+
+public interface EventRecordRepository extends CrudRepository<EventRecord, UUID> {
 }

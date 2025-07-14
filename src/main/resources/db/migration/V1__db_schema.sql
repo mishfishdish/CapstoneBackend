@@ -22,11 +22,11 @@ CREATE TABLE clubs (
 
 -- USER_CLUBS TABLE
 CREATE TABLE user_clubs (
+                            id UUID PRIMARY KEY,
                             user_id UUID REFERENCES users(user_id),
                             club_id UUID REFERENCES clubs(club_id),
-                            role_in_club VARCHAR(10), -- 'admin' or 'member'
-                            joined_at TIMESTAMP,
-                            PRIMARY KEY (user_id, club_id)
+                            role_in_club VARCHAR(10),
+                            joined_at TIMESTAMP
 );
 
 -- TASKS TABLE
@@ -34,8 +34,8 @@ CREATE TABLE tasks (
                        task_id UUID PRIMARY KEY,
                        title VARCHAR(100),
                        description TEXT,
-                       priority VARCHAR(10), -- 'low', 'medium', 'high'
-                       deadline DATE,
+                       priority VARCHAR(10),
+                       deadline TIMESTAMP,
                        completed BOOLEAN DEFAULT FALSE,
                        created_by UUID REFERENCES users(user_id),
                        created_at TIMESTAMP,
@@ -44,9 +44,9 @@ CREATE TABLE tasks (
 
 -- TASK_CLUBS TABLE
 CREATE TABLE task_clubs (
+                            id UUID PRIMARY KEY,
                             task_id UUID REFERENCES tasks(task_id),
-                            club_id UUID REFERENCES clubs(club_id),
-                            PRIMARY KEY (task_id, club_id)
+                            club_id UUID REFERENCES clubs(club_id)
 );
 
 -- EVENTS TABLE
@@ -61,17 +61,16 @@ CREATE TABLE events (
 
 -- TASK_DEPENDENCIES TABLE
 CREATE TABLE task_dependencies (
+                                   id UUID PRIMARY KEY,
                                    task_id UUID REFERENCES tasks(task_id),
                                    club_id UUID REFERENCES clubs(club_id),
-                                   depends_on_event_id UUID REFERENCES events(event_id),
-                                   PRIMARY KEY (task_id, club_id)
+                                   depends_on_event_id UUID REFERENCES events(event_id)
 );
 
--- EVENT_CLUBS TABLE
 CREATE TABLE event_clubs (
+                             id UUID PRIMARY KEY,
                              event_id UUID REFERENCES events(event_id),
-                             club_id UUID REFERENCES clubs(club_id),
-                             PRIMARY KEY (event_id, club_id)
+                             club_id UUID REFERENCES clubs(club_id)
 );
 
 -- EVENT_DEPENDENCIES TABLE
@@ -104,26 +103,15 @@ CREATE TABLE attendance (
                             event_id UUID REFERENCES events(event_id),
                             first_name VARCHAR(100),
                             last_name VARCHAR(100),
-                            member_type VARCHAR(10), -- 'manager', 'member', 'lead'
+                            member_type VARCHAR(10),
                             timestamp TIMESTAMP
 );
 
 -- CSV_IMPORTS TABLE
 CREATE TABLE csv_imports (
                              import_id UUID PRIMARY KEY,
-                             uploaded_by UUID REFERENCES users(user_id),
+                             uploaded_by UUID NOT NULL REFERENCES users(user_id),
                              file_name TEXT,
                              import_status VARCHAR(20), -- 'pending', 'processing', 'completed', 'failed'
-                             created_at TIMESTAMP
-);
-
--- AUDIT_LOGS TABLE
-CREATE TABLE audit_logs (
-                            log_id UUID PRIMARY KEY,
-                            user_id UUID REFERENCES users(user_id),
-                            action VARCHAR(100),
-                            entity_type VARCHAR(100),
-                            entity_id UUID,
-                            timestamp TIMESTAMP,
-                            details JSONB
+                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
