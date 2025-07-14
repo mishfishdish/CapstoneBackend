@@ -31,10 +31,10 @@ jobs:
 
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build and Push with Jib
+      - name: Clean and Build with Jib (no cache)
         run: |
-          ./gradlew jib \
+          ./gradlew clean jib \
+            --no-build-cache \
             --image=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend-app:${{ github.sha }}
       - name: Debug environment variables (DO NOT COMMIT TO MAIN)
         run: |
