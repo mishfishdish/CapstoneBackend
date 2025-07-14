@@ -34,6 +34,7 @@ public class AttendanceRecord {
     private String lastName;
 
     @Column(name = "MEMBER_TYPE")
+    @Enumerated(EnumType.STRING)
     private MemberType memberType;
 
     @Column(name = "TIMESTAMP")
