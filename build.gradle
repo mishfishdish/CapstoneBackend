@@ -104,12 +104,4 @@ jib {
 	to {
 		image = 'springboot-app'
 	}
-	container {
-		ports = ['8080']
-		environment = [
-				SPRING_DATASOURCE_URL     : 'jdbc:postgresql://postgres:5432/testdb',
-				SPRING_DATASOURCE_USERNAME: 'testuser',
-				SPRING_DATASOURCE_PASSWORD: 'testpass'
-		]
-	}
 }
