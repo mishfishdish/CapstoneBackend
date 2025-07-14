@@ -40,9 +40,9 @@ jobs:
       - name: SSH into EC2 and deploy backend container
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.BACKEND_EC2_HOST }}
-          username: ${{ secrets.BACKEND_EC2_USER }}
-          key: ${{ secrets.BACKEND_EC2_KEY }}
+          host: ${{ secrets.FRONTEND_EC2_HOST }}
+          username: ${{ secrets.FRONTEND_EC2_USER }}
+          key: ${{ secrets.FRONTEND_EC2_KEY }}
           script: |
             IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend-app:${{ github.sha }}"
             echo "Running container from image: $IMAGE"
