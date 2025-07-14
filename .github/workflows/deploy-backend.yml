@@ -1,0 +1,61 @@
+name: Deploy Backend to EC2 with Jib
+
+on:
+  workflow_dispatch:
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+  ECR_REPOSITORY: backend-app
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push with Jib
+        run: |
+          ./gradlew jib \
+            --image=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend-app:${{ github.sha }}
+
+      - name: SSH into EC2 and deploy backend container
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.BACKEND_EC2_HOST }}
+          username: ${{ secrets.BACKEND_EC2_USER }}
+          key: ${{ secrets.BACKEND_EC2_KEY }}
+          script: |
+            IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend-app:${{ github.sha }}"
+            echo "Running container from image: $IMAGE"
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+            docker pull $IMAGE
+            docker stop backend || true
+            docker rm backend || true
+            docker run -d -p 5000:5000 --name backend \
+              -e SPRING_PROFILES_ACTIVE=prod \
+              -e DB_HOST=${{ secrets.DB_HOST }} \
+              -e DB_USER=${{ secrets.DB_USER }} \
+              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e MAIL_USER=${{ secrets.MAIL_USER }} \
+              -e MAIL_PASS=${{ secrets.MAIL_PASS }} \
+              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+              $IMAGE
