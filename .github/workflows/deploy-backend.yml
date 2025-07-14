@@ -52,18 +52,21 @@ jobs:
           username: ${{ secrets.FRONTEND_EC2_USER }}
           key: ${{ secrets.FRONTEND_EC2_KEY }}
           script: |
-            IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend-app:${{ github.sha }}"
+            IMAGE="${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
             echo "Running container from image: $IMAGE"
-            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
+
             docker pull $IMAGE
             docker stop backend || true
             docker rm backend || true
+
             docker run -d -p 5000:5000 --name backend \
               -e SPRING_PROFILES_ACTIVE=production \
-              -e DB_HOST=${{ secrets.DB_HOST }} \
-              -e DB_USER=${{ secrets.DB_USER }} \
-              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -e MAIL_USER=${{ secrets.MAIL_USER }} \
-              -e MAIL_PASS=${{ secrets.MAIL_PASS }} \
-              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+              -e DB_HOST="${{ secrets.DB_HOST }}" \
+              -e DB_USER="${{ secrets.DB_USER }}" \
+              -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+              -e MAIL_USER="${{ secrets.MAIL_USER }}" \
+              -e MAIL_PASS="${{ secrets.MAIL_PASS }}" \
+              -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               $IMAGE
