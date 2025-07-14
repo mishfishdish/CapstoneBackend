@@ -36,7 +36,15 @@ jobs:
         run: |
           ./gradlew jib \
             --image=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend-app:${{ github.sha }}
-
+      - name: Debug environment variables (DO NOT COMMIT TO MAIN)
+        run: |
+          echo "🔧 DEBUGGING ENV VARIABLES"
+          echo "DB_HOST=${{ secrets.DB_HOST }}"
+          echo "DB_USER=${{ secrets.DB_USER }}"
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
+          echo "MAIL_USER=${{ secrets.MAIL_USER }}"
+          echo "MAIL_PASS=${{ secrets.MAIL_PASS }}"
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}"
       - name: SSH into EC2 and deploy backend container
         uses: appleboy/ssh-action@v1.0.0
         with:
