@@ -22,7 +22,7 @@ public class GetClubsController {
     private final GetClubsService getClubsService;
     private final ClientManager client;
 
-    @GetMapping("/users/{userId}/clubs")
+    @GetMapping("api/users/{userId}/clubs")
     public ResponseEntity<List<ClubResponse>> handler(@Valid @PathVariable UUID userId ){
         client.setUserId(userId);
         return new ResponseEntity<>(getClubsService.getResponse(),getClubsService.getStatus());
