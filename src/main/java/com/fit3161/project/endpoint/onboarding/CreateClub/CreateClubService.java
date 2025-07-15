@@ -3,6 +3,7 @@ package com.fit3161.project.endpoint.onboarding.CreateClub;
 import com.fit3161.project.database.Database;
 import com.fit3161.project.database.club.ClubRecord;
 import com.fit3161.project.endpoint.onboarding.CreateClub.request.CreateClubRequest;
+import com.fit3161.project.endpoint.onboarding.CreateClub.response.CreateResponse;
 import com.fit3161.project.managers.ClientManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,11 @@ public class CreateClubService {
         return HttpStatus.NO_CONTENT;
     }
 
-    public String getResponse(){
+    public CreateResponse getResponse(){
         final CreateClubRequest request = client.getRequestAs(CreateClubRequest.class);
         final ClubRecord record = database.createClubRecord(club
                 -> club.name(request.getName()).description(request.getDescription()));
         database.saveClubRecord(record);
-        return null;
+        return new CreateResponse(record.getClubId());
     }
 }

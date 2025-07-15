@@ -1,6 +1,7 @@
 package com.fit3161.project.endpoint.onboarding.CreateClub;
 
 import com.fit3161.project.endpoint.onboarding.CreateClub.request.CreateClubRequest;
+import com.fit3161.project.endpoint.onboarding.CreateClub.response.CreateResponse;
 import com.fit3161.project.managers.ClientManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,7 @@ public class CreateClubController {
     private final ClientManager client;
 
     @PostMapping("/api/clubs")
-    public ResponseEntity<String> handler(@Valid @RequestBody CreateClubRequest request) {
-        System.out.println("MICHELLE");
+    public ResponseEntity<CreateResponse> handler(@Valid @RequestBody CreateClubRequest request) {
         client.setRequest(request);
         return new ResponseEntity<>(clubService.getResponse(),clubService.getStatus());
     }
