@@ -2,6 +2,7 @@ package com.fit3161.project.endpoint.onboarding.InviteClub;
 
 import com.fit3161.project.database.Database;
 import com.fit3161.project.database.club.ClubRecord;
+import com.fit3161.project.database.user.UserClubs;
 import com.fit3161.project.database.user.UserRecord;
 import com.fit3161.project.endpoint.onboarding.CreateUser.request.UserRequest;
 import com.fit3161.project.endpoint.onboarding.InviteClub.request.InviteRequest;
@@ -37,21 +38,31 @@ public class InviteService {
     public String getResponse(){
         final InviteRequest request = client.getRequestAs(InviteRequest.class);
         final ClubRecord club = database.findClub(UUID.fromString(request.getClubId()));
+        if (database.userExists(request.getEmail())){
+            final UserRecord user = database.findUser(request.getEmail());
+            final UserClubs userClubRecord = database.addUserToClub(record
+                    -> record.club(club).user(user).roleInClub(request.getRole()));
+            database.saveUserClubRecord(userClubRecord);
+        }
+        else{
+            //Generate token with details
+            String token = Jwts.builder()
+                    .setSubject("club-invite")
+                    .setClaims(Map.of(
+                            "clubId", club.getClubId(),
+                            "clubName", club.getName(),
+                            "role", request.getRole()
+                    ))
+                    .setIssuedAt(new Date())
+                    .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .compact();
 
-        //Generate token with details
-        String token = Jwts.builder()
-                .setSubject("club-invite")
-                .setClaims(Map.of(
-                        "clubId", club.getClubId(),
-                        "clubName", club.getName(),
-                        "role", request.getRole()
-                ))
-                .setIssuedAt(new Date())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
+            //Send email via email server
+            email.sendInviteEmail(request.getEmail(),club.getName(),token);
 
-        //Send email via email server
-        email.sendInviteEmail(request.getEmail(),club.getName(),token);
+        }
+
+
 
         return null;
     }

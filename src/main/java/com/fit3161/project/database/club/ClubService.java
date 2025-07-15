@@ -1,7 +1,9 @@
 package com.fit3161.project.database.club;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public interface ClubService {
 
@@ -19,6 +21,12 @@ public interface ClubService {
 
     default ClubRecord findClub(final UUID clubId){
         return getClubRepository().findClubRecordByClubId(clubId);
+    }
+
+    default List<ClubResponse> getClubFromUser(final UUID userId){
+        return getClubRepository().findClubNamesByUserId(userId).stream()
+                .map(row -> new ClubResponse((String) row[1], (UUID) row[0]))
+                .collect(Collectors.toList());
     }
 
 }

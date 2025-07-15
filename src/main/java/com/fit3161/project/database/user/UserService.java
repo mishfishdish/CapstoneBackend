@@ -27,8 +27,12 @@ public interface UserService {
         return getUserRepository().existsByEmailAndPasswordHash(username, password);
     }
 
+    default Boolean userExists(String username){
+        return getUserRepository().existsByEmail(username);};
+
+
     default UserRecord findUser(String username){
-        return getUserRepository().findUserRecordIdByEmail(username);
+        return getUserRepository().findUserRecordIdByEmailOrUserId(username);
     }
 
     default UserClubs addUserToClub(final Consumer<UserClubs.UserClubsBuilder> consumer){

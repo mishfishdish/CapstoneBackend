@@ -24,15 +24,12 @@ public class SignUserService {
         return HttpStatus.ACCEPTED;
     }
 
-    public String getResponse() throws JsonProcessingException {
+    public SignResponse getResponse() throws JsonProcessingException {
         final SignRequest request = client.getRequestAs(SignRequest.class);
         boolean exists = database.userExists(request.getEmail(), request.getPassword());
         if (exists) {
             UserRecord user = database.findUser(request.getEmail());
-            ObjectMapper mapper = new ObjectMapper();
-            SignResponse signResponse = new SignResponse(user.getUserId());
-            String json = mapper.writeValueAsString(signResponse);
-            return json;
+            return new SignResponse(user.getUserId());
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }

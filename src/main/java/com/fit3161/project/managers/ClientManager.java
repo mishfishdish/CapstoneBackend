@@ -8,6 +8,8 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
+import java.util.UUID;
+
 @RequestScope
 @Component
 @Getter
@@ -16,6 +18,7 @@ import org.springframework.web.context.annotation.RequestScope;
 public class ClientManager implements RequestObjectTransformer {
     private static ClientManager reference;
     private Object request;
+    private UUID userId;
 
     public static ClientManager client(){
         return reference;

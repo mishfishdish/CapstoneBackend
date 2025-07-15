@@ -23,7 +23,7 @@ public class SignUserController {
     private final ClientManager client;
 
     @PostMapping("/api/auth/login")
-    public ResponseEntity<String> handler(@Valid @RequestBody SignRequest request) throws JsonProcessingException {
+    public ResponseEntity<SignResponse> handler(@Valid @RequestBody SignRequest request) throws JsonProcessingException {
         client.setRequest(request);
         return new ResponseEntity<>(userService.getResponse(),userService.getStatus());
     }
