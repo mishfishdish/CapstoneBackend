@@ -16,7 +16,7 @@ public interface UserRepository extends CrudRepository<UserRecord, UUID> {
     SELECT u FROM UserRecord u 
     WHERE u.email = :value OR CAST(u.userId AS string) = :value
     """)
-    Optional<UserRecord> findUserRecordIdByEmailOrUserId(@Param("value") String value);
+    UserRecord findUserRecordIdByEmailOrUserId(@Param("value") String value);
 
 }
 
