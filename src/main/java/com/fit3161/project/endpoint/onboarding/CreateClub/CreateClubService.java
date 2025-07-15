@@ -18,7 +18,7 @@ public class CreateClubService {
     private final ClientManager client;
 
     public HttpStatus getStatus(){
-        return HttpStatus.NO_CONTENT;
+        return HttpStatus.OK;
     }
 
     public CreateResponse getResponse(){
