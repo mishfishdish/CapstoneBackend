@@ -18,7 +18,7 @@ public interface NotificationService {
     }
 
     default void deleteNotification(NotificationRecord notificationRecord){
-        getNotificationRepository().deleteNotificationRecord(notificationRecord);
+        getNotificationRepository().delete(notificationRecord);
     }
 
     default NotificationRecord findNotification(EventRecord eventRecord){

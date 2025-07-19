@@ -4,7 +4,9 @@ import com.fit3161.project.database.Database;
 import com.fit3161.project.database.event.EventRecord;
 import com.fit3161.project.database.notification.NotificationRecord;
 import com.fit3161.project.endpoint.activityManagement.createEvent.request.CreateEventRequest;
+import com.fit3161.project.endpoint.activityManagement.updateEvent.request.UpdateEventRequest;
 import com.fit3161.project.managers.ClientManager;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -16,6 +18,7 @@ import java.util.UUID;
 
 @Service
 @Getter
+@Transactional
 @RequiredArgsConstructor
 public class UpdateEventService {
     private final Database database;
@@ -26,7 +29,7 @@ public class UpdateEventService {
     }
 
     public String getResponse() {
-        final CreateEventRequest request = client.getRequestAs(CreateEventRequest.class);
+        final UpdateEventRequest request = client.getRequestAs(UpdateEventRequest.class);
 
         // 1. Fetch the existing event
         EventRecord existing = database.findEvent(client.getEventId());
@@ -44,7 +47,7 @@ public class UpdateEventService {
         database.saveEventRecord(existing);
 
         if (request.getClubIds() != null) {
-            database.removeEvent(existing); // remove all old links
+            database.removeClubEvent(existing); // remove all old links
                 for (UUID clubId : request.getClubIds()) {
                     database.addEventToClub(eventclub ->
                             eventclub.event(existing).club(database.findClub(clubId)));

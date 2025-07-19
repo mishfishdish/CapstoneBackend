@@ -1,0 +1,48 @@
+openapi: 3.0.0
+info:
+  title: User Events API
+  version: 1.0.0
+  description: API to retrieve events associated with a user based on their club memberships.
+
+paths:
+  /api/users/{userId}/events:
+    get:
+      summary: Get all events for a user
+      description: Returns all events the user is associated with via club memberships.
+      tags:
+        - Events
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID of the user
+      responses:
+        '200':
+          description: List of events the user is associated with
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserEventSummary'
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    UserEventSummary:
+      type: object
+      properties:
+        eventId:
+          type: string
+          format: uuid
+        title:
+          type: string
+      required:
+        - eventId
+        - title

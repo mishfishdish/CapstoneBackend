@@ -4,6 +4,8 @@ import com.fit3161.project.database.club.ClubRecord;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "task_clubs")
 @Getter
@@ -13,8 +15,9 @@ import lombok.*;
 @Builder
 public class TaskClubs {
 
-    @EmbeddedId
-    private TaskClubId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @ManyToOne
     @MapsId("taskId")

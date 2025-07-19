@@ -19,6 +19,7 @@ import java.util.UUID;
 public class TaskRecord {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "task_id", nullable = false, updatable = false)
     private UUID taskId;
 

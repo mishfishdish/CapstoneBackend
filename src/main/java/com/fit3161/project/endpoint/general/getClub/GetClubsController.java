@@ -1,8 +1,6 @@
-package com.fit3161.project.endpoint.activityManagement.getClub;
+package com.fit3161.project.endpoint.general.getClub;
 
 import com.fit3161.project.database.club.ClubResponse;
-import com.fit3161.project.endpoint.onboarding.AddToClub.AddToClubService;
-import com.fit3161.project.endpoint.onboarding.AddToClub.request.AddClubRequest;
 import com.fit3161.project.managers.ClientManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.fit3161.project.endpoint.activityManagement.getClub;
+package com.fit3161.project.endpoint.general.getClub;
 
 import com.fit3161.project.database.Database;
 import com.fit3161.project.database.club.ClubRecord;

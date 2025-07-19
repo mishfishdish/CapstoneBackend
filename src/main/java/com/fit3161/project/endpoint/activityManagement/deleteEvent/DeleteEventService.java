@@ -5,6 +5,7 @@ import com.fit3161.project.database.event.EventRecord;
 import com.fit3161.project.database.notification.NotificationRecord;
 import com.fit3161.project.endpoint.activityManagement.createEvent.request.CreateEventRequest;
 import com.fit3161.project.managers.ClientManager;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 @Service
 @Getter
+@Transactional
 @RequiredArgsConstructor
 public class DeleteEventService {
     private final Database database;

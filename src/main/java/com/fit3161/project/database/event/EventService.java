@@ -42,7 +42,7 @@ public interface EventService {
         getEventClubRepository().removeEventClubsByEvent(eventRecord);
     }
     default void removeEventDependencies(EventRecord eventRecord){
-        getEventDependencyRepository().removeEventDependenciesByEvent(eventRecord);
+        getEventDependencyRepository().removeEventDependenciesByEventId(eventRecord);
     }
     default void removeEvent(EventRecord eventRecord){
         getEventRecordRepository().delete(eventRecord);
