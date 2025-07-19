@@ -36,11 +36,11 @@ public interface TasksService {
         return getTaskRecordRepository().findTaskRecordByTaskId(taskId);
     }
 
-    default void removeTaskEvent(TaskRecord taskRecord){
+    default void removeTaskClub(TaskRecord taskRecord){
         getTaskClubRepository().removeTaskClubsByEvent(taskRecord);
     }
 
-    default void removeTasDependencies(TaskRecord taskRecord){
+    default void removeTaskDependencies(TaskRecord taskRecord){
         getTaskDependencyRepository().removeTaskDependenciesByTaskId(taskRecord);
     }
     default void removeTask(TaskRecord taskRecord){

@@ -4,6 +4,7 @@ import com.fit3161.project.database.event.EventClubRepository;
 import com.fit3161.project.database.event.EventDependencyRepository;
 import com.fit3161.project.database.event.EventRecord;
 import com.fit3161.project.database.event.EventRecordRepository;
+import com.fit3161.project.database.tasks.TaskRecord;
 
 import java.util.function.Consumer;
 
@@ -23,6 +24,10 @@ public interface NotificationService {
 
     default NotificationRecord findNotification(EventRecord eventRecord){
         return getNotificationRepository().findNotificationRecordByEvent(eventRecord);
+    }
+
+    default NotificationRecord findNotification(TaskRecord taskRecord){
+        return getNotificationRepository().findNotificationRecordByTask(taskRecord);
     }
 
     default void updateNotification(NotificationRecord notificationRecord){
