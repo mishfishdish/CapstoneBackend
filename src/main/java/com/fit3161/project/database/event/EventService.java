@@ -38,11 +38,14 @@ public interface EventService {
         return getEventRecordRepository().findEventRecordByEventId(eventId);
     }
 
-    default void removeEvent(EventRecord eventRecord){
+    default void removeClubEvent(EventRecord eventRecord){
         getEventClubRepository().removeEventClubsByEvent(eventRecord);
     }
     default void removeEventDependencies(EventRecord eventRecord){
         getEventDependencyRepository().removeEventDependenciesByEvent(eventRecord);
+    }
+    default void removeEvent(EventRecord eventRecord){
+        getEventRecordRepository().delete(eventRecord);
     }
 
 }
