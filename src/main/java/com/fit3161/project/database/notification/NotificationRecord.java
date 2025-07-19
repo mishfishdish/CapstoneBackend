@@ -1,6 +1,6 @@
 package com.fit3161.project.database.notification;
 
-import com.fit3161.project.database.event.daos.EventRecord;
+import com.fit3161.project.database.event.EventRecord;
 import com.fit3161.project.database.tasks.TaskRecord;
 import com.fit3161.project.database.user.UserRecord;
 import jakarta.persistence.*;
@@ -33,4 +33,7 @@ public class NotificationRecord {
     @ManyToOne
     @JoinColumn(name = "EVENT_ID", referencedColumnName = "EVENT_ID", nullable = false)
     private EventRecord event;
+
+    @Column(name = "NOTIFY_BEFORE_MINUTES")
+    private Integer notifyBeforeMinutes;
 }

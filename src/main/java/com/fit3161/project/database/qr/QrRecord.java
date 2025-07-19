@@ -1,6 +1,6 @@
 package com.fit3161.project.database.qr;
 
-import com.fit3161.project.database.event.daos.EventRecord;
+import com.fit3161.project.database.event.EventRecord;
 import jakarta.persistence.*;
 import lombok.*;
 

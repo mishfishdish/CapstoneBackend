@@ -1,6 +1,6 @@
 package com.fit3161.project.database.attendance;
 
-import com.fit3161.project.database.event.daos.EventRecord;
+import com.fit3161.project.database.event.EventRecord;
 import com.fit3161.project.database.attendance.enums.MemberType;
 import jakarta.persistence.*;
 import lombok.*;

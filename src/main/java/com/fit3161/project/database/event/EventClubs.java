@@ -1,4 +1,4 @@
-package com.fit3161.project.database.event.daos;
+package com.fit3161.project.database.event;
 
 import com.fit3161.project.database.club.ClubRecord;
 import jakarta.persistence.*;

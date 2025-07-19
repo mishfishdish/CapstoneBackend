@@ -1,4 +1,9 @@
 package com.fit3161.project.database.notification;
 
-public class NotificationRepository {
+import com.fit3161.project.database.event.EventRecord;
+import org.springframework.data.repository.CrudRepository;
+
+import java.util.UUID;
+
+public interface NotificationRepository extends CrudRepository<NotificationRecord, UUID> {
 }

@@ -1,4 +1,4 @@
-package com.fit3161.project.database.event.daos;
+package com.fit3161.project.database.event;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
