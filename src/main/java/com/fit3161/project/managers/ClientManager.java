@@ -19,6 +19,7 @@ public class ClientManager implements RequestObjectTransformer {
     private static ClientManager reference;
     private Object request;
     private UUID userId;
+    private UUID eventId;
 
     public static ClientManager client(){
         return reference;
