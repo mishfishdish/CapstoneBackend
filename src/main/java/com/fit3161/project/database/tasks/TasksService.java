@@ -6,55 +6,68 @@ import com.fit3161.project.endpoint.general.getEvents.EventResponse;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public interface TasksService {
     TaskClubRepository getTaskClubRepository();
+
     TaskDependencyRepository getTaskDependencyRepository();
+
     TaskRecordRepository getTaskRecordRepository();
 
-    default TaskRecord createTask(Consumer<TaskRecord.TaskRecordBuilder> consumer){
+    default TaskRecord createTask(Consumer<TaskRecord.TaskRecordBuilder> consumer) {
         final TaskRecord.TaskRecordBuilder taskRecordBuilder = new TaskRecord.TaskRecordBuilder();
         consumer.accept(taskRecordBuilder);
         return getTaskRecordRepository().save(taskRecordBuilder.build());
     }
 
-    default TaskRecord saveTaskRecord(final TaskRecord task){
+    default TaskRecord saveTaskRecord(final TaskRecord task) {
         return getTaskRecordRepository().save(task);
     }
 
-    default TaskClubs addTaskToClub(final Consumer<TaskClubs.TaskClubsBuilder> consumer){
+    default TaskClubs addTaskToClub(final Consumer<TaskClubs.TaskClubsBuilder> consumer) {
         final TaskClubs.TaskClubsBuilder task = new TaskClubs.TaskClubsBuilder();
         consumer.accept(task);
         return getTaskClubRepository().save(task.build());
     }
 
-    default TaskDependencies addTaskToDependOnEvent(final Consumer<TaskDependencies.TaskDependenciesBuilder> consumer){
+    default TaskDependencies addTaskToDependOnEvent(final Consumer<TaskDependencies.TaskDependenciesBuilder> consumer) {
         final TaskDependencies.TaskDependenciesBuilder dependency = new TaskDependencies.TaskDependenciesBuilder();
         consumer.accept(dependency);
         return getTaskDependencyRepository().save(dependency.build());
     }
 
-    default TaskRecord findTask(UUID taskId){
+    default TaskRecord findTask(UUID taskId) {
         return getTaskRecordRepository().findTaskRecordByTaskId(taskId);
     }
 
-    default void removeTaskClub(TaskRecord taskRecord){
+    default void removeTaskClub(TaskRecord taskRecord) {
         getTaskClubRepository().removeTaskClubsByEvent(taskRecord);
     }
 
-    default void removeTaskDependencies(TaskRecord taskRecord){
+    default void removeTaskDependencies(TaskRecord taskRecord) {
         getTaskDependencyRepository().removeTaskDependenciesByTaskId(taskRecord);
     }
-    default void removeTask(TaskRecord taskRecord){
+
+    default void removeTask(TaskRecord taskRecord) {
         getTaskRecordRepository().delete(taskRecord);
     }
 
-    default List<ActivityResponse> getAllActivities(UUID clubId){
+    default List<ActivityResponse> getAllActivities(UUID clubId) {
         return getTaskRecordRepository().findAllActivitiesByClubId(clubId);
     }
 
-    default List<EventResponse> getAllEvents(UUID clubId){
+    default List<EventResponse> getAllEvents(UUID clubId) {
         return getTaskRecordRepository().findAllEventsByClubId(clubId);
+    }
+
+    default UUID findTaskDependency(TaskRecord taskRecord) {
+        return getTaskDependencyRepository().findEventDependenciesByTaskId(taskRecord.getTaskId()).getDependsOnEvent().getEventId();
+    }
+
+    default Stream<UUID> findEventClubIds(TaskRecord eventRecord) {
+        return getTaskClubRepository().findTaskClubsByTask(eventRecord).stream().map(
+                eventClub -> eventClub.getClub().getClubId());
     }
 
 

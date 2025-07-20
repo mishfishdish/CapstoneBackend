@@ -18,7 +18,7 @@ public class CreateEventService {
     private final Database database;
     private final ClientManager client;
 
-    public HttpStatus getStatus(){
+    public HttpStatus getStatus() {
         return HttpStatus.NO_CONTENT;
     }
 
@@ -27,11 +27,11 @@ public class CreateEventService {
         //createEvent
         final EventRecord record = database.createEvent(event
                 -> event.title(request.getTitle())
-                        .description(request.getDescription())
-                        .startTime(request.getStartTime())
-                        .endTime(request.getEndTime())
-                        .location(request.getLocation())
-                );
+                .description(request.getDescription())
+                .startTime(request.getStartTime())
+                .endTime(request.getEndTime())
+                .location(request.getLocation())
+        );
         database.saveEventRecord(record);
         //Associate with clubs
         for (UUID clubId : request.getClubs()) {
@@ -40,14 +40,14 @@ public class CreateEventService {
             );
         }
         //Add Parent Event
-        if(request.getParentEvent() != null){
+        if (request.getParentEventId() != null) {
             database.addEventToDependOnEvent(dependency ->
-                    dependency.eventId(record).dependEventId(database.findEvent(request.getParentEvent())));
+                    dependency.eventId(record).dependEventId(database.findEvent(request.getParentEventId())));
         }
         //Add notification
-        if(request.getNotification() != null){
+        if (request.getNotification() != null) {
             database.createNotification(notification ->
-                  notification.event(record).notifyBeforeMinutes(request.getNotification().getNotifyBeforeMinutes()).userId(database.findUser(String.valueOf(request.getUserId())))
+                    notification.event(record).notifyBeforeMinutes(request.getNotification().getNotifyBeforeMinutes()).userId(database.findUser(String.valueOf(request.getUserId())))
             );
         }
         return null;

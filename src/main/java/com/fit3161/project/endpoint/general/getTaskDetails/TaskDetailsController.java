@@ -1,10 +1,10 @@
-package com.fit3161.project.endpoint.activityManagement.deleteEvent;
+package com.fit3161.project.endpoint.general.getTaskDetails;
 
 import com.fit3161.project.managers.ClientManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,14 +16,14 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(produces = APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-public class DeleteEventController {
+public class TaskDetailsController {
 
-    private final DeleteEventService deleteEventService;
+    private final TaskDetailsService taskDetailsService;
     private final ClientManager client;
 
-    @DeleteMapping("/api/events/{eventId}")
-    public ResponseEntity<String> handler(@Valid @PathVariable UUID eventId) {
-        client.setEventId(eventId);
-        return new ResponseEntity<>(deleteEventService.getResponse(), deleteEventService.getStatus());
+    @GetMapping("/api/tasks/{taskId}")
+    public ResponseEntity<TaskDetailsResponse> handler(@Valid @PathVariable UUID taskId) {
+        client.setEventId(taskId);
+        return new ResponseEntity<>(taskDetailsService.getResponse(), taskDetailsService.getStatus());
     }
 }
