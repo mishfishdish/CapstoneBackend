@@ -13,9 +13,9 @@ public class CreateTaskRequest {
     private String title;
     private LocalDateTime dueDate;
     private String description;
-    private List<UUID> clubIds;
+    private List<UUID> clubs;
     private String priority;
-    private UUID parentEventId;
+    private UUID parentEvent;
     private Notification notification;
     private UUID userId;
 }

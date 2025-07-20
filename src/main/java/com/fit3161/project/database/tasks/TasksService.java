@@ -1,7 +1,9 @@
 package com.fit3161.project.database.tasks;
 
-import com.fit3161.project.database.event.*;
+import com.fit3161.project.endpoint.general.getActivities.ActivityResponse;
+import com.fit3161.project.endpoint.general.getEvents.EventResponse;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -46,5 +48,14 @@ public interface TasksService {
     default void removeTask(TaskRecord taskRecord){
         getTaskRecordRepository().delete(taskRecord);
     }
+
+    default List<ActivityResponse> getAllActivities(UUID clubId){
+        return getTaskRecordRepository().findAllActivitiesByClubId(clubId);
+    }
+
+    default List<EventResponse> getAllEvents(UUID clubId){
+        return getTaskRecordRepository().findAllEventsByClubId(clubId);
+    }
+
 
 }

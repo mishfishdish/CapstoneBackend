@@ -8,6 +8,8 @@ import com.fit3161.project.database.event.EventRecordRepository;
 import com.fit3161.project.database.event.EventService;
 import com.fit3161.project.database.notification.NotificationRepository;
 import com.fit3161.project.database.notification.NotificationService;
+import com.fit3161.project.database.qr.QrRepository;
+import com.fit3161.project.database.qr.QrService;
 import com.fit3161.project.database.tasks.TaskClubRepository;
 import com.fit3161.project.database.tasks.TaskDependencyRepository;
 import com.fit3161.project.database.tasks.TaskRecordRepository;
@@ -22,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @RequiredArgsConstructor
-public class Database implements UserService, ClubService, EventService, NotificationService, TasksService {
+public class Database implements UserService, ClubService, EventService, NotificationService, QrService, TasksService {
     private final UserRepository userRepository;
     private final UserClubRepository userClubRepository;
     private final ClubRepository clubRepository;
@@ -33,6 +35,7 @@ public class Database implements UserService, ClubService, EventService, Notific
     private final TaskRecordRepository taskRecordRepository;
     private final TaskClubRepository taskClubRepository;
     private final TaskDependencyRepository taskDependencyRepository;
+    private final QrRepository qrRepository;
 
 
 }

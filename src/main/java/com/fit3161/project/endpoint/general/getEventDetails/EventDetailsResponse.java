@@ -1,6 +1,6 @@
-package com.fit3161.project.endpoint.activityManagement.createEvent.request;
+package com.fit3161.project.endpoint.general.getEventDetails;
 
-import com.fit3161.project.endpoint.activityManagement.common.Notification;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class CreateEventRequest {
+@Builder
+public class EventDetailsResponse {
 
     private String title;
     private LocalDateTime startTime;
@@ -17,6 +18,6 @@ public class CreateEventRequest {
     private String description;
     private List<UUID> clubs;
     private UUID parentEventId;
-    private Notification notification;
-    private UUID userId;
+    private Integer notifyBeforeMinutes;
+    private String qrCode;
 }

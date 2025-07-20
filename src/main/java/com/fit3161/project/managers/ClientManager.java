@@ -21,6 +21,7 @@ public class ClientManager implements RequestObjectTransformer {
     private UUID userId;
     private UUID eventId;
     private UUID taskId;
+    private UUID clubId;
 
     public static ClientManager client(){
         return reference;

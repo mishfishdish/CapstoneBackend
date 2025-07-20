@@ -1,9 +1,7 @@
 package com.fit3161.project.endpoint.activityManagement.createTask;
 
 import com.fit3161.project.database.Database;
-import com.fit3161.project.database.event.EventRecord;
 import com.fit3161.project.database.tasks.TaskRecord;
-import com.fit3161.project.endpoint.activityManagement.createEvent.request.CreateEventRequest;
 import com.fit3161.project.endpoint.activityManagement.createTask.request.CreateTaskRequest;
 import com.fit3161.project.managers.ClientManager;
 import lombok.Getter;
@@ -37,15 +35,15 @@ public class CreateTaskService {
 
         database.saveTaskRecord(record);
         //Associate with clubs
-        for (UUID clubId : request.getClubIds()) {
+        for (UUID clubId : request.getClubs()) {
             database.addTaskToClub(taskclub
                     -> taskclub.task(record).club(database.findClub(clubId))
             );
         }
         //Add Parent Event
-        if(request.getParentEventId() != null){
+        if(request.getParentEvent() != null){
             database.addTaskToDependOnEvent(dependency ->
-                    dependency.task(record).dependsOnEvent(database.findEvent(request.getParentEventId())));
+                    dependency.task(record).dependsOnEvent(database.findEvent(request.getParentEvent())));
         }
         //Add notification
         if(request.getNotification() != null){

@@ -1,4 +1,12 @@
 package com.fit3161.project.database.qr;
 
-public class QrService {
+import com.fit3161.project.database.event.EventRecord;
+
+public interface QrService {
+    QrRepository getQrRepository();
+
+    default QrRecord findQr(EventRecord eventRecord) {
+        return getQrRepository().findQrRecordByEvent(eventRecord);
+    }
+
 }

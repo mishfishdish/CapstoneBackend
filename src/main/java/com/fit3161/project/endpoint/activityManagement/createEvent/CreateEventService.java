@@ -1,13 +1,8 @@
 package com.fit3161.project.endpoint.activityManagement.createEvent;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fit3161.project.database.Database;
 import com.fit3161.project.database.event.EventRecord;
-import com.fit3161.project.database.user.UserRecord;
 import com.fit3161.project.endpoint.activityManagement.createEvent.request.CreateEventRequest;
-import com.fit3161.project.endpoint.onboarding.CreateUser.request.UserRequest;
-import com.fit3161.project.endpoint.onboarding.CreateUser.response.CreateResponse;
 import com.fit3161.project.managers.ClientManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -39,15 +34,15 @@ public class CreateEventService {
                 );
         database.saveEventRecord(record);
         //Associate with clubs
-        for (UUID clubId : request.getClubIds()) {
+        for (UUID clubId : request.getClubs()) {
             database.addEventToClub(eventclub
                     -> eventclub.event(record).club(database.findClub(clubId))
             );
         }
         //Add Parent Event
-        if(request.getParentEventId() != null){
+        if(request.getParentEvent() != null){
             database.addEventToDependOnEvent(dependency ->
-                    dependency.eventId(record).dependEventId(database.findEvent(request.getParentEventId())));
+                    dependency.eventId(record).dependEventId(database.findEvent(request.getParentEvent())));
         }
         //Add notification
         if(request.getNotification() != null){
