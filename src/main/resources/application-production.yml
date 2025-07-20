@@ -32,3 +32,6 @@ spring:
 
 app:
   jwt-secret: ${JWT_SECRET}
+
+qr:
+  endpoint: "http://capstoneapp-frontend.duckdns.org/attendance"

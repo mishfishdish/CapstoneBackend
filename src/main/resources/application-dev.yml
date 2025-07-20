@@ -6,7 +6,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-        ddl-auto: validate
+      ddl-auto: validate
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
@@ -31,3 +31,6 @@ spring:
             enable: false
 app:
   jwt-secret: 7WZgM8lrfzEp9yJVFqAD3vUMRxKzP5tCBwqYxLZd5Tk=
+
+qr:
+  endpoint: "http://capstoneapp-frontend.duckdns.org/attendance"

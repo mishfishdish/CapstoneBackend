@@ -2,13 +2,18 @@ package com.fit3161.project.endpoint.activityManagement.createEvent;
 
 import com.fit3161.project.database.Database;
 import com.fit3161.project.database.event.EventRecord;
+import com.fit3161.project.database.qr.QrRecord;
 import com.fit3161.project.endpoint.activityManagement.createEvent.request.CreateEventRequest;
 import com.fit3161.project.managers.ClientManager;
+import com.fit3161.project.utilities.QrCodeUtil;
+import com.google.zxing.WriterException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -17,6 +22,8 @@ import java.util.UUID;
 public class CreateEventService {
     private final Database database;
     private final ClientManager client;
+    @Value("${qr.endpoint}")
+    private String qrEndpoint;
 
     public HttpStatus getStatus() {
         return HttpStatus.NO_CONTENT;
@@ -50,6 +57,23 @@ public class CreateEventService {
                     notification.event(record).notifyBeforeMinutes(request.getNotification().getNotifyBeforeMinutes()).userId(database.findUser(String.valueOf(request.getUserId())))
             );
         }
+
+        QrRecord qrRecord = database.createQrCode(
+                code ->
+                {
+                    try {
+                        code.event(record).qrCode(QrCodeUtil.generateQrCodeBase64(qrEndpoint + "?eventId=" + record.getEventId()));
+                    } catch (WriterException e) {
+                        throw new RuntimeException(e);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        );
+
+        database.saveQrRecord(qrRecord);
+
+
         return null;
 
     }
