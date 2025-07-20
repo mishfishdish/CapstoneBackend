@@ -51,7 +51,7 @@ public interface EventService {
     }
 
     default UUID findEventDependency(EventRecord eventRecord) {
-        return getEventDependencyRepository().findEventDependenciesByEventId(eventRecord.getEventId()).getDependEventId().getEventId();
+        return getEventDependencyRepository().findEventDependenciesByEventId(eventRecord).getDependEventId().getEventId();
     }
 
     default Stream<UUID> findEventClubIds(EventRecord eventRecord) {

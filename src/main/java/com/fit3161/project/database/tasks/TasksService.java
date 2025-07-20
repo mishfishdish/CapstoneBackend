@@ -42,11 +42,11 @@ public interface TasksService {
     }
 
     default void removeTaskClub(TaskRecord taskRecord) {
-        getTaskClubRepository().removeTaskClubsByEvent(taskRecord);
+        getTaskClubRepository().removeTaskClubsByTask(taskRecord);
     }
 
     default void removeTaskDependencies(TaskRecord taskRecord) {
-        getTaskDependencyRepository().removeTaskDependenciesByTaskId(taskRecord);
+        getTaskDependencyRepository().removeTaskDependenciesByTask(taskRecord);
     }
 
     default void removeTask(TaskRecord taskRecord) {
@@ -62,11 +62,11 @@ public interface TasksService {
     }
 
     default UUID findTaskDependency(TaskRecord taskRecord) {
-        return getTaskDependencyRepository().findEventDependenciesByTaskId(taskRecord.getTaskId()).getDependsOnEvent().getEventId();
+        return getTaskDependencyRepository().findEventDependenciesByTask(taskRecord).getDependsOnEvent().getEventId();
     }
 
     default Stream<UUID> findEventClubIds(TaskRecord eventRecord) {
-        return getTaskClubRepository().findTaskClubsByTask(eventRecord).stream().map(
+        return getTaskClubRepository().findTaskClubsById(eventRecord).stream().map(
                 eventClub -> eventClub.getClub().getClubId());
     }
 

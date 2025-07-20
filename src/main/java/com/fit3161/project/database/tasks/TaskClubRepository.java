@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface TaskClubRepository extends CrudRepository<TaskClubs, UUID> {
-    void removeTaskClubsByEvent(TaskRecord taskRecord);
+    void removeTaskClubsByTask(TaskRecord taskRecord);
 
-    List<TaskClubs> findTaskClubsByTask(TaskRecord taskRecord);
+    List<TaskClubs> findTaskClubsById(TaskRecord taskRecord);
 
 }
