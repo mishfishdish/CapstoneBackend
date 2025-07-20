@@ -1,10 +1,10 @@
 package com.fit3161.project.database.attendance;
 
-import com.fit3161.project.database.event.EventRecord;
 import com.fit3161.project.database.attendance.enums.MemberType;
+import com.fit3161.project.database.event.EventRecord;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -38,7 +38,7 @@ public class AttendanceRecord {
     private MemberType memberType;
 
     @Column(name = "TIMESTAMP")
-    @UpdateTimestamp
+    @CreationTimestamp
     private LocalDateTime timestamp;
 
 }
