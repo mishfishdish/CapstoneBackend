@@ -34,3 +34,6 @@ app:
 
 qr:
   endpoint: "http://capstoneapp-frontend.duckdns.org/attendance"
+
+invite:
+  endpoint: "http://capstoneapp-frontend.duckdns.org/register?token="

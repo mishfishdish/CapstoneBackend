@@ -4,13 +4,11 @@ import com.fit3161.project.database.Database;
 import com.fit3161.project.database.club.ClubRecord;
 import com.fit3161.project.database.user.UserClubs;
 import com.fit3161.project.database.user.UserRecord;
-import com.fit3161.project.endpoint.onboarding.CreateUser.request.UserRequest;
 import com.fit3161.project.endpoint.onboarding.InviteClub.request.InviteRequest;
 import com.fit3161.project.managers.ClientManager;
 import com.fit3161.project.services.EmailService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,21 +28,22 @@ public class InviteService {
     private final EmailService email;
     @Value("${app.jwt-secret}")
     private String secretKey;
+    @Value("${invite.endpoint}")
+    private String inviteEndpoint;
 
-    public HttpStatus getStatus(){
+    public HttpStatus getStatus() {
         return HttpStatus.NO_CONTENT;
     }
 
-    public String getResponse(){
+    public String getResponse() {
         final InviteRequest request = client.getRequestAs(InviteRequest.class);
         final ClubRecord club = database.findClub(UUID.fromString(request.getClubId()));
-        if (database.userExists(request.getEmail())){
+        if (database.userExists(request.getEmail())) {
             final UserRecord user = database.findUser(request.getEmail());
             final UserClubs userClubRecord = database.addUserToClub(record
                     -> record.club(club).user(user).roleInClub(request.getRole()));
             database.saveUserClubRecord(userClubRecord);
-        }
-        else{
+        } else {
             //Generate token with details
             String token = Jwts.builder()
                     .setSubject("club-invite")
@@ -58,10 +57,9 @@ public class InviteService {
                     .compact();
 
             //Send email via email server
-            email.sendInviteEmail(request.getEmail(),club.getName(),token);
+            email.sendInviteEmail(request.getEmail(), club.getName(), inviteEndpoint + token);
 
         }
-
 
 
         return null;

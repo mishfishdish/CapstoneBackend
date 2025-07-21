@@ -14,4 +14,7 @@ public class AttendanceRequest {
     private String firstName;
     private String lastName;
     private MemberType memberType;
+    private String email;
+    private String notes;
 }
+//add email and notes
