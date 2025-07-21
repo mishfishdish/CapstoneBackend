@@ -62,7 +62,7 @@ public class CreateEventService {
                 code ->
                 {
                     try {
-                        code.event(record).qrCode(QrCodeUtil.generateQrCodeBase64(qrEndpoint + "?eventId=" + record.getEventId()));
+                        code.event(record).qrCode(QrCodeUtil.generateQrCodeBase64(qrEndpoint + "?eventId=" + record.getEventId() + "&eventName=" + record.getTitle()));
                     } catch (WriterException e) {
                         throw new RuntimeException(e);
                     } catch (IOException e) {
