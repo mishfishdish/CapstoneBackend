@@ -50,7 +50,8 @@ public class InviteService {
                     .setClaims(Map.of(
                             "clubId", club.getClubId(),
                             "clubName", club.getName(),
-                            "role", request.getRole()
+                            "role", request.getRole(),
+                            "email", request.getEmail()
                     ))
                     .setIssuedAt(new Date())
                     .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))

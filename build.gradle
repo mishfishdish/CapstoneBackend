@@ -1,9 +1,8 @@
-
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.4'
-	id 'io.spring.dependency-management' version '1.1.7'
-	id 'com.google.cloud.tools.jib' version '3.4.5'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.4'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.google.cloud.tools.jib' version '3.4.5'
 
 }
 
@@ -11,99 +10,98 @@ group = 'com.fit3161'
 version = '0.0.1-SNAPSHOT'
 
 
-
 // Standard build task (already exists with Java plugin)
 build {
-	dependsOn clean
+    dependsOn clean
 }
 
 
-
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 bootJar {
-	archiveFileName = 'app.jar'
+    archiveFileName = 'app.jar'
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	implementation 'org.flywaydb:flyway-core:10.14.0' // or latest
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    implementation 'org.flywaydb:flyway-core:10.14.0' // or latest
 
-	runtimeOnly 'org.postgresql:postgresql'
-	implementation 'org.flywaydb:flyway-database-postgresql:10.20.1'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-	implementation 'com.google.zxing:core:3.5.1'
-	implementation 'com.google.zxing:javase:3.5.1'
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.flywaydb:flyway-database-postgresql:10.20.1'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    implementation 'com.google.zxing:core:3.5.1'
+    implementation 'com.google.zxing:javase:3.5.1'
+    implementation 'org.hibernate:hibernate-envers:6.4.4.Final'
 
 
 }
 
 configurations.all {
-	resolutionStrategy.eachDependency { details ->
-		if (details.requested.group == 'org.flywaydb') {
-			details.useVersion '10.14.0'
-		}
-	}
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'org.flywaydb') {
+            details.useVersion '10.14.0'
+        }
+    }
 }
 
 tasks.register("startTestEnvironment") {
-	group = "docker"
-	description = "Spin up Postgres container"
-	doLast {
-		exec {
-			commandLine("docker","compose", "-f", "docker-compose.yml", "up", "-d")
-		}
-	}
+    group = "docker"
+    description = "Spin up Postgres container"
+    doLast {
+        exec {
+            commandLine("docker", "compose", "-f", "docker-compose.yml", "up", "-d")
+        }
+    }
 }
 
 tasks.register("startApp") {
-	group = "docker"
-	description = "Build and run app container"
-	dependsOn("jibDockerBuild")
-	doLast {
-		exec {
-			commandLine(
-					"docker", "run",
-					"--rm",
-					"--platform=linux/amd64",           // 🔧 Force x86_64 if needed
-					"--network=app-network",
-					"-p", "8080:8080",
-					"springboot-app"
-			)
-		}
-	}
+    group = "docker"
+    description = "Build and run app container"
+    dependsOn("jibDockerBuild")
+    doLast {
+        exec {
+            commandLine(
+                    "docker", "run",
+                    "--rm",
+                    "--platform=linux/amd64",           // 🔧 Force x86_64 if needed
+                    "--network=app-network",
+                    "-p", "8080:8080",
+                    "springboot-app"
+            )
+        }
+    }
 }
 
 jib {
-	to {
-		image = 'springboot-app'
-	}
+    to {
+        image = 'springboot-app'
+    }
 }

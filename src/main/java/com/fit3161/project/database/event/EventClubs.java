@@ -3,6 +3,7 @@ package com.fit3161.project.database.event;
 import com.fit3161.project.database.club.ClubRecord;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Audited
 public class EventClubs {
 
     @Id

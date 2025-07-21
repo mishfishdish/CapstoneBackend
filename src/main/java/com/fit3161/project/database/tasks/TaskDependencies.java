@@ -4,6 +4,7 @@ import com.fit3161.project.database.club.ClubRecord;
 import com.fit3161.project.database.event.EventRecord;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Audited
 public class TaskDependencies {
 
     @Id

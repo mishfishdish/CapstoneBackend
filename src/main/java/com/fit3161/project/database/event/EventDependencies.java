@@ -2,6 +2,7 @@ package com.fit3161.project.database.event;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.util.UUID;
 
@@ -12,6 +13,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Audited
 public class EventDependencies {
 
     @Id
