@@ -19,5 +19,6 @@ public class EventDetailsResponse {
     private List<UUID> clubs;
     private UUID parentEventId;
     private Integer notifyBeforeMinutes;
+    private Boolean completed;
     private String qrCode;
 }

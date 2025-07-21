@@ -17,5 +17,6 @@ public class UpdateTaskRequest {
     private String priority;
     private UUID parentEventId;
     private Notification notification;
+    private Boolean completed;
     private UUID userId;
 }

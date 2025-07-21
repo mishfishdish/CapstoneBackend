@@ -18,7 +18,7 @@ public class CreateTaskService {
     private final Database database;
     private final ClientManager client;
 
-    public HttpStatus getStatus(){
+    public HttpStatus getStatus() {
         return HttpStatus.NO_CONTENT;
     }
 
@@ -27,11 +27,12 @@ public class CreateTaskService {
         //createEvent
         final TaskRecord record = database.createTask(event
                 -> event.title(request.getTitle())
-                        .description(request.getDescription())
-                        .deadline(request.getDueDate())
-                        .priority(request.getPriority())
-                        .createdBy(database.findUser(String.valueOf(request.getUserId())))
-                );
+                .description(request.getDescription())
+                .completed(false)
+                .deadline(request.getDueDate())
+                .priority(request.getPriority())
+                .createdBy(database.findUser(String.valueOf(request.getUserId())))
+        );
 
         database.saveTaskRecord(record);
         //Associate with clubs
@@ -41,14 +42,14 @@ public class CreateTaskService {
             );
         }
         //Add Parent Event
-        if(request.getParentEvent() != null){
+        if (request.getParentEvent() != null) {
             database.addTaskToDependOnEvent(dependency ->
                     dependency.task(record).dependsOnEvent(database.findEvent(request.getParentEvent())));
         }
         //Add notification
-        if(request.getNotification() != null){
+        if (request.getNotification() != null) {
             database.createNotification(notification ->
-                  notification.task(record).notifyBeforeMinutes(request.getNotification().getNotifyBeforeMinutes()).userId(database.findUser(String.valueOf(request.getUserId())))
+                    notification.task(record).notifyBeforeMinutes(request.getNotification().getNotifyBeforeMinutes()).userId(database.findUser(String.valueOf(request.getUserId())))
             );
         }
         return null;

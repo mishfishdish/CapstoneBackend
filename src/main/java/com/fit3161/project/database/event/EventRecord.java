@@ -37,4 +37,7 @@ public class EventRecord {
     @Column(name = "DESCRIPTION")
     private String description;
 
+    @Column(name = "COMPLETED")
+    private Boolean completed;
+
 }
