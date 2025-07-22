@@ -2,11 +2,15 @@ package com.fit3161.project.database.tasks;
 
 import com.fit3161.project.endpoint.general.getActivities.ActivityResponse;
 import com.fit3161.project.endpoint.general.getEvents.EventResponse;
+import com.fit3161.project.endpoint.home.response.Activity;
+import com.fit3161.project.endpoint.home.response.TaskStats;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
 
 public interface TasksService {
     TaskClubRepository getTaskClubRepository();
@@ -68,6 +72,28 @@ public interface TasksService {
     default Stream<UUID> findEventClubIds(TaskRecord eventRecord) {
         return getTaskClubRepository().findTaskClubsById(eventRecord).stream().map(
                 eventClub -> eventClub.getClub().getClubId());
+    }
+
+    default TaskStats findTasksStats(UUID userId) {
+        Object[] result = getTaskRecordRepository().countCompletedAndTotalTasksForUserClubs(userId);
+        TaskStats stats = new TaskStats();
+        stats.setCompleted(((Number) result[0]).intValue());
+        stats.setTotal(((Number) result[1]).intValue());
+        return stats;
+
+    }
+
+    default List<Activity> findUpcoming5Activities(UUID userId) {
+        List<Object[]> results = getTaskRecordRepository().findTop5UpcomingTasksAndEvents(userId);
+        List<Activity> activities = results.stream().map(row -> {
+            Activity activity = new Activity();
+            activity.setTitle((String) row[0]);
+            activity.setTime(((Timestamp) row[1]).toLocalDateTime());
+            activity.setType((String) row[2]);
+            return activity;
+        }).toList();
+        return activities;
+
     }
 
 

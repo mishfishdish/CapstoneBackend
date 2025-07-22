@@ -1,6 +1,5 @@
 package com.fit3161.project.auditing;
 
-import com.fit3161.project.database.club.ClubRecord;
 import com.fit3161.project.database.event.*;
 import com.fit3161.project.database.tasks.*;
 import jakarta.persistence.EntityManager;
@@ -89,37 +88,36 @@ public class AuditService {
         };
 
         return switch (activity.getEntityName()) {
-            case "Task" -> {
-                var task = taskRepository.findById(UUID.fromString(activity.getEntityId())).orElse(null);
-                var clubs = taskClubRepository.findClubsByTask(task).stream()
-                        .map(ClubRecord::getName).toList();
-
+            case "Task", "TaskClub" -> {
+                var taskId = switch (activity.getEntityName()) {
+                    case "Task" -> UUID.fromString(activity.getEntityId());
+                    case "TaskClub" -> {
+                        var tc = taskClubRepository.findById(UUID.fromString(activity.getEntityId())).orElse(null);
+                        yield tc != null ? tc.getTask().getTaskId() : null;
+                    }
+                    default -> null;
+                };
+                var task = taskId != null ? taskRepository.findById(taskId).orElse(null) : null;
                 yield "Task '" + (task != null ? task.getTitle() : "[unknown]") +
-                        (clubs.isEmpty() ? "" : "' for Club(s) " + clubs) +
                         "' was " + action + " at " + activity.getRevisionTimestamp();
             }
-            case "TaskClub" -> {
-                var tc = taskClubRepository.findById(UUID.fromString(activity.getEntityId())).orElse(null);
-                yield "Task '" + (tc != null ? tc.getTask().getTitle() : "[unknown]") +
-                        "' was " + action + " for Club '" + (tc != null ? tc.getClub().getName() : "[unknown]") +
-                        "' at " + activity.getRevisionTimestamp();
-            }
-            case "Event" -> {
-                var event = eventRepository.findById(UUID.fromString(activity.getEntityId())).orElse(null);
-                var clubs = eventClubRepository.findClubsByEvent(event).stream()
-                        .map(ClubRecord::getName).toList();
+
+            case "Event", "EventClub", "EventDependency" -> {
+                var eventId = switch (activity.getEntityName()) {
+                    case "Event" -> UUID.fromString(activity.getEntityId());
+                    case "EventClub" -> {
+                        var ec = eventClubRepository.findById(UUID.fromString(activity.getEntityId())).orElse(null);
+                        yield ec != null ? ec.getEvent().getEventId() : null;
+                    }
+                    default -> null;
+                };
+                var event = eventId != null ? eventRepository.findById(eventId).orElse(null) : null;
                 yield "Event '" + (event != null ? event.getTitle() : "[unknown]") +
-                        (clubs.isEmpty() ? "" : "' for Club(s) " + clubs) +
                         "' was " + action + " at " + activity.getRevisionTimestamp();
             }
-            case "EventClub" -> {
-                var ec = eventClubRepository.findById(UUID.fromString(activity.getEntityId())).orElse(null);
-                yield "Event '" + (ec != null ? ec.getEvent().getTitle() : "[unknown]") +
-                        "' was " + action + " for Club '" + (ec != null ? ec.getClub().getName() : "[unknown]") +
-                        "' at " + activity.getRevisionTimestamp();
-            }
-            default ->
-                    activity.getEntityName() + " with ID " + activity.getEntityId() + " was " + action + " at " + activity.getRevisionTimestamp();
+
+            default -> activity.getEntityName() + " with ID " + activity.getEntityId() +
+                    " was " + action + " at " + activity.getRevisionTimestamp();
         };
     }
 

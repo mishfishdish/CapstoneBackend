@@ -56,4 +56,42 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
             )
             """, nativeQuery = true)
     List<EventResponse> findAllEventsByClubId(@Param("clubId") UUID clubId);
+
+    @Query(value = """
+            SELECT 
+                COUNT(*) FILTER (WHERE t.completed = TRUE) AS completed_count,
+                COUNT(*) AS total_count
+            FROM tasks t
+            JOIN task_clubs tc ON t.task_id = tc.task_id
+            JOIN user_clubs uc ON tc.club_id = uc.club_id
+            WHERE uc.user_id = :userId
+            """, nativeQuery = true)
+    Object[] countCompletedAndTotalTasksForUserClubs(@Param("userId") UUID userId);
+
+    @Query(value = """
+            SELECT title, datetime, type FROM (
+                SELECT
+                    t.title AS title,
+                    t.deadline AS datetime,
+                    'task' AS type
+                FROM tasks t
+                JOIN task_clubs tc ON t.task_id = tc.task_id
+                JOIN user_clubs uc ON tc.club_id = uc.club_id
+                WHERE uc.user_id = :userId AND t.deadline > CURRENT_TIMESTAMP
+            
+                UNION ALL
+            
+                SELECT
+                    e.title AS title,
+                    e.start_time AS datetime,
+                    'event' AS type
+                FROM events e
+                JOIN event_clubs ec ON e.event_id = ec.event_id
+                JOIN user_clubs uc ON ec.club_id = uc.club_id
+                WHERE uc.user_id = :userId AND e.start_time > CURRENT_TIMESTAMP
+            ) combined
+            ORDER BY datetime ASC
+            LIMIT 5
+            """, nativeQuery = true)
+    List<Object[]> findTop5UpcomingTasksAndEvents(@Param("userId") UUID userId);
 }

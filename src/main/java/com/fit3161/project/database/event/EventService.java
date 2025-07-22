@@ -1,5 +1,7 @@
 package com.fit3161.project.database.event;
 
+import com.fit3161.project.endpoint.home.response.EventStats;
+
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -57,6 +59,15 @@ public interface EventService {
     default Stream<UUID> findEventClubIds(EventRecord eventRecord) {
         return getEventClubRepository().findEventClubsByEvent(eventRecord).stream().map(
                 eventClub -> eventClub.getClub().getClubId());
+    }
+
+    default EventStats findEventStats(UUID userId) {
+        Object[] result = getEventRecordRepository().findEventCountsForUser(userId);
+        EventStats stats = new EventStats();
+        stats.setPast(((Number) result[0]).intValue());
+        stats.setTotal(((Number) result[1]).intValue());
+        return stats;
+
     }
 
 }
