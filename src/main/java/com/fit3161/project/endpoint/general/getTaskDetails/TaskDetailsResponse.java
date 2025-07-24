@@ -17,5 +17,6 @@ public class TaskDetailsResponse {
     private List<UUID> clubs;
     private String priority;
     private UUID parentEventId;
+    private Boolean completed;
     private Integer notifyBeforeMinutes;
 }

@@ -42,7 +42,6 @@ public class EventDetailsService {
         response.notifyBeforeMinutes(database.findNotification(existing).getNotifyBeforeMinutes());
         response.parentEventId(database.findEventDependency(existing));
         response.qrCode(database.findQr(existing).getQrCode());
-        response.completed(existing.getCompleted());
 
 
         return response.build();

@@ -36,6 +36,7 @@ public class TaskDetailsService {
         response.title(existing.getTitle());
         response.description(existing.getDescription());
         response.dueDate(existing.getDeadline());
+        response.completed(existing.isCompleted());
         response.clubs(database.findEventClubIds(existing).toList());
         response.notifyBeforeMinutes(database.findNotification(existing).getNotifyBeforeMinutes());
         response.parentEventId(database.findTaskDependency(existing));
