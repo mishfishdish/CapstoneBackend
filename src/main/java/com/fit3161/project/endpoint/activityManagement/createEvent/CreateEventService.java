@@ -30,6 +30,12 @@ public class CreateEventService {
     }
 
     public String getResponse() {
+        createEvent();
+        return null;
+
+    }
+
+    public void createEvent() {
         final CreateEventRequest request = client.getRequestAs(CreateEventRequest.class);
         //createEvent
         final EventRecord record = database.createEvent(event
@@ -73,8 +79,6 @@ public class CreateEventService {
 
         database.saveQrRecord(qrRecord);
 
-
-        return null;
 
     }
 }

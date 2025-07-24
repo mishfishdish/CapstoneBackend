@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -27,6 +28,7 @@ public class ClientManager implements RequestObjectTransformer {
     private Optional<Integer> page;
     private Optional<Integer> size;
     private String sort;
+    private MultipartFile file;
 
     public static ClientManager client() {
         return reference;
