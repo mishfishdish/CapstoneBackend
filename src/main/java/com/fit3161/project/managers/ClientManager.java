@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RequestScope
@@ -22,13 +23,17 @@ public class ClientManager implements RequestObjectTransformer {
     private UUID eventId;
     private UUID taskId;
     private UUID clubId;
+    private String search;
+    private Optional<Integer> page;
+    private Optional<Integer> size;
+    private String sort;
 
-    public static ClientManager client(){
+    public static ClientManager client() {
         return reference;
     }
 
     @PostConstruct
-    private void init(){
+    private void init() {
         reference = this;
     }
 }

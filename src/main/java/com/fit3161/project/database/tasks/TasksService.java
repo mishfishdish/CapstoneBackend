@@ -4,6 +4,8 @@ import com.fit3161.project.endpoint.general.getActivities.ActivityResponse;
 import com.fit3161.project.endpoint.general.getEvents.EventResponse;
 import com.fit3161.project.endpoint.home.response.Activity;
 import com.fit3161.project.endpoint.home.response.TaskStats;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -61,9 +63,14 @@ public interface TasksService {
         return getTaskRecordRepository().findAllActivitiesByClubId(clubId);
     }
 
+    default List<ActivityResponse> getAllActivitiesByUser(UUID userId) {
+        return getTaskRecordRepository().findAllActivitiesByUserId(userId);
+    }
+
     default List<EventResponse> getAllEvents(UUID clubId) {
         return getTaskRecordRepository().findAllEventsByClubId(clubId);
     }
+
 
     default UUID findTaskDependency(TaskRecord taskRecord) {
         return getTaskDependencyRepository().findEventDependenciesByTask(taskRecord).getDependsOnEvent().getEventId();
@@ -94,6 +101,10 @@ public interface TasksService {
         }).toList();
         return activities;
 
+    }
+
+    default Page<ActivityResponse> findAllByUserIdAndSearch(UUID userId, UUID clubId, String search, Pageable pageable) {
+        return getTaskRecordRepository().findAllByUserIdAndSearch(userId, clubId, search, pageable);
     }
 
 

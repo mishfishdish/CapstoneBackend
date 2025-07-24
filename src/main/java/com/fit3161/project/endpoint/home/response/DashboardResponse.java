@@ -8,6 +8,7 @@ import java.util.List;
 @Builder
 @Data
 public class DashboardResponse {
+    private String name;
     private List<Activity> activities;
     private EventStats events;
     private TaskStats tasks;
