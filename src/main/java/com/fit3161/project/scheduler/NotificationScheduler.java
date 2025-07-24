@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 
 @Service
@@ -22,7 +20,6 @@ public class NotificationScheduler {
 
     private final Database database;
     private final EmailService emailService;
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     @Scheduled(cron = "0 */5 * * * *")
     private void processNotifications() {
