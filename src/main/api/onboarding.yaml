@@ -13,8 +13,6 @@ paths:
             schema:
               type: object
               properties:
-                username:
-                  type: string
                 firstname:
                   type: string
                 lastname:
@@ -31,8 +29,15 @@ paths:
                 - email
                 - password
       responses:
-        '201':
-          description: User registered successfully
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
         '400':
           description: Invalid input
 
@@ -57,6 +62,14 @@ paths:
       responses:
         '200':
           description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+
         '401':
           description: Invalid credentials
         '400':
@@ -79,8 +92,15 @@ paths:
                 - name
                 - description
       responses:
-        '201':
+        '200':
           description: Club created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clubId:
+                    type: string
         '400':
           description: Invalid club data
   /api/clubs/{clubId}/users:
