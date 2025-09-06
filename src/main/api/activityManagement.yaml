@@ -1,197 +1,114 @@
 openapi: 3.0.3
 info:
-  title: Task & Event API
-  version: 1.2.0
+  title: SigmaSchedule Activity API
+  version: 1.0.0
+  description: |
+    Endpoints for querying club/user activities.
+servers:
+  - url: http://localhost:8080
+    description: Local dev
 
 paths:
-  /api/tasks:
-    post:
-      summary: Create a new task
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TaskInput'
-      responses:
-        '201':
-          description: Task created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-  /api/tasks/{taskId}:
-    put:
-      summary: Update a task
+  /api/clubs/activity:
+    get:
+      tags: [ Activities ]
+      summary: List activities
+      operationId: listActivities
+      description: >
+        Returns activities filtered by optional `clubId`, `userId`, and text `search`,
+        with optional pagination and sort. Default sort is `date`.
       parameters:
-        - name: taskId
-          in: path
-          required: true
+        - in: query
+          name: clubId
           schema:
             type: string
             format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TaskInput'
+          required: false
+          description: Filter by club UUID.
       responses:
-        '200':
-          description: Task updated
+        "200":
+          description: Activities retrieved successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
-    delete:
-      summary: Delete a task
-      parameters:
-        - name: taskId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '204':
-          description: Task deleted
-
-  /api/events:
-    post:
-      summary: Create a new event
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EventInput'
-      responses:
-        '201':
-          description: Event created
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityResponse"
+              examples:
+                sample:
+                  summary: Example list
+                  value:
+                    - activityId: "5e0c1c77-9a4e-4c2e-9f41-2b3a5f8d6b0a"
+                      activityTitle: "Semester Kickoff"
+                      startTime: "2025-09-15T18:00:00Z"
+                      endTime: "2025-09-15T20:00:00Z"
+                      type: "EVENT"
+                      dependsOnEventId: null
+                    - activityId: "b1a6f8fd-4c2f-4f8d-91f2-6d0b2c1a7e90"
+                      activityTitle: "Committee Planning Session"
+                      startTime: "2025-09-20T09:00:00Z"
+                      endTime: "2025-09-20T10:30:00Z"
+                      type: "TASK"
+                      dependsOnEventId: "5e0c1c77-9a4e-4c2e-9f41-2b3a5f8d6b0a"
+        "400":
+          description: Bad request (e.g., invalid UUID or parameter type).
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
-
-  /api/events/{eventId}:
-    put:
-      summary: Update an event
-      parameters:
-        - name: eventId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EventInput'
-      responses:
-        '200':
-          description: Event updated
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 400
+                error: "Bad Request"
+                message: "clubId must be a valid UUID"
+        "500":
+          description: Unexpected server error.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
-    delete:
-      summary: Delete an event
-      parameters:
-        - name: eventId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '204':
-          description: Event deleted
+                $ref: "#/components/schemas/Error"
+              example:
+                status: 500
+                error: "Internal Server Error"
+                message: "An unexpected error occurred."
 
 components:
   schemas:
-    TaskInput:
+    ActivityResponse:
       type: object
+      properties:
+        activityId:
+          type: string
+          format: uuid
+        activityTitle:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+          description: ISO-8601 timestamp.
+        endTime:
+          type: string
+          format: date-time
+          description: ISO-8601 timestamp.
+        type:
+          type: string
+          description: Activity type label (e.g., EVENT, TASK).
+        dependsOnEventId:
+          type: string
+          format: uuid
+          nullable: true
       required:
-        - title
-      properties:
-        title:
-          type: string
-        description:
-          type: string
-        dueDate:
-          type: string
-          format: date-time
-        clubIds:
-          type: array
-          items:
-            type: string
-            format: uuid
-        priority:
-          type: string
-          enum: [low, medium, high]
-        parentEventId:
-          type: string
-          format: uuid
-        notification:
-          $ref: '#/components/schemas/NotificationInput'
-
-    Task:
-      allOf:
-        - $ref: '#/components/schemas/TaskInput'
-        - type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-
-    EventInput:
-      type: object
-      required:
-        - title
-        - start_time
-        - end_time
-      properties:
-        title:
-          type: string
-        start_time:
-          type: string
-          format: date-time
-        end_time:
-          type: string
-          format: date-time
-        location:
-          type: string
-        description:
-          type: string
-        clubIds:
-          type: array
-          items:
-            type: string
-            format: uuid
-        parentEventId:
-          type: string
-          format: uuid
-        notification:
-          $ref: '#/components/schemas/NotificationInput'
-
-    Event:
-      allOf:
-        - $ref: '#/components/schemas/EventInput'
-        - type: object
-          properties:
-            event_id:
-              type: string
-              format: uuid
-
-    NotificationInput:
+        - activityId
+        - activityTitle
+        - startTime
+        - endTime
+        - type
+    Error:
       type: object
       properties:
-        user_id:
-          type: string
-          format: uuid
-        notify_before_minutes:
+        status:
           type: integer
-        sent:
-          type: boolean
+        error:
+          type: string
+        message:
+          type: string
+      required: [ status, error, message ]
