@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.Map;
@@ -38,6 +39,9 @@ public class InviteService {
     public String getResponse() {
         final InviteRequest request = client.getRequestAs(InviteRequest.class);
         final ClubRecord club = database.findClub(UUID.fromString(request.getClubId()));
+        if (club == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found");
+        }
         if (database.userExists(request.getEmail())) {
             final UserRecord user = database.findUser(request.getEmail());
             final UserClubs userClubRecord = database.addUserToClub(record

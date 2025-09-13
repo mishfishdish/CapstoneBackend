@@ -552,6 +552,114 @@
 			"response": []
 		},
 		{
+			"name": "Invite user (if club doesn't exist)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Generate random details once so we can reuse",
+							"let email = pm.variables.replaceIn(\"{{$randomEmail}}\");",
+							"let password = pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\");",
+							"",
+							"pm.environment.set(\"inviteEmail\", email);",
+							"pm.environment.set(\"invitePassword\", password);",
+							"",
+							"// Step 1: Create User",
+							"pm.sendRequest({",
+							"    url: \"http://localhost:8080/api/auth\",",
+							"    method: \"POST\",",
+							"    header: { \"Content-Type\": \"application/json\" },",
+							"    body: {",
+							"        mode: \"raw\",",
+							"        raw: JSON.stringify({",
+							"            firstName: pm.variables.replaceIn(\"{{$randomFirstName}}\"),",
+							"            lastName: pm.variables.replaceIn(\"{{$randomLastName}}\"),",
+							"            email: email,",
+							"            password: password",
+							"        })",
+							"    }",
+							"}, function (err, res) {",
+							"    if (err) {",
+							"        console.error(\"Error creating user:\", err);",
+							"    } else {",
+							"        console.log(\"User created:\", res.json());",
+							"",
+							"        // Step 2: Create Club",
+							"        pm.sendRequest({",
+							"            url: \"http://localhost:8080/api/clubs\",",
+							"            method: \"POST\",",
+							"            header: { \"Content-Type\": \"application/json\" },",
+							"            body: {",
+							"                mode: \"raw\",",
+							"                raw: JSON.stringify({",
+							"                    name: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\"),",
+							"                    description: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\")",
+							"                })",
+							"            }",
+							"        }, function (err2, res2) {",
+							"            if (err2) {",
+							"                console.error(\"Error creating club:\", err2);",
+							"            } else {",
+							"                let json2 = res2.json();",
+							"                let clubId = json2.clubId || json2.id;",
+							"                pm.environment.set(\"clubId\", clubId);",
+							"                console.log(\"Club created with ID:\", clubId);",
+							"            }",
+							"        });",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							"",
+							"pm.test(\"Response body is empty\", function () {",
+							"    pm.expect(pm.response.text()).to.be.empty;",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{inviteEmail}}\",\n  \"clubId\": \"{{clubId}}\",\n  \"role\": \"member\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/clubs/invite",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"clubs",
+						"invite"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Invite user (if user does not exists)",
 			"event": [
 				{
