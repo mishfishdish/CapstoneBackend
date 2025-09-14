@@ -20,18 +20,111 @@ paths:
             format: uuid
           description: UUID of the user
       responses:
-        '200':
+        "200":
           description: List of events the user is associated with
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserEventSummary'
-        '404':
+                  $ref: "#/components/schemas/UserEventSummary"
+        "404":
           description: User not found
-        '500':
+        "500":
           description: Internal server error
+
+  /api/activity/stats:
+    get:
+      summary: Get statistics for an activity or event
+      description: Retrieve datapoints such as attendance for a specific activity or event.
+      tags:
+        - ActivityStats
+      parameters:
+        - in: query
+          name: activityId
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          style: form
+          explode: true
+          description: List of IDs of the events or activities (repeat the parameter for multiple, e.g. activityId=...&activityId=...)
+        - in: query
+          name: attributeType
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [ATTENDANCE, COMPLETION]
+            default: [ATTENDANCE]
+          style: form
+          explode: true
+          description: List of attribute types to retrieve (defaults to ATTENDANCE), an activity will only return attributes it supports
+      responses:
+        "200":
+          description: List of datapoints for the requested attribute
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityStatDatapoint"
+              examples:
+                multipleActivitiesExample:
+                  summary: Multiple activities and types
+                  value:
+                    - activityId: "a1b2c3d4-1111-2222-3333-444455556666"
+                      time: "2025-09-20T09:00:00Z"
+                      type: "ATTENDANCE"
+                      value: 63
+                    - activityId: "a1b2c3d4-1111-2222-3333-444455556666"
+                      time: "2025-09-20T09:00:00Z"
+                      type: "COMPLETION"
+                      value: 40
+                    - activityId: "b2c3d4e5-7777-8888-9999-000011112222"
+                      time: "2025-09-23T09:00:00Z"
+                      type: "ATTENDANCE"
+                      value: 44
+                    - activityId: "b2c3d4e5-7777-8888-9999-000011112222"
+                      time: "2025-09-23T09:00:00Z"
+                      type: "COMPLETION"
+                      value: 30
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Missing required parameter: activityId"
+        "404":
+          description: Activity not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Activity not found"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Internal server error"
 
 components:
   schemas:
@@ -46,3 +139,23 @@ components:
       required:
         - eventId
         - title
+
+    ActivityStatDatapoint:
+      type: object
+      properties:
+        activityId:
+          type: string
+          format: uuid
+        time:
+          type: string
+          format: date-time
+        type:
+          type: string
+          enum: [ATTENDANCE, COMPLETION]
+        value:
+          type: integer
+      required:
+        - activityId
+        - time
+        - type
+        - value
