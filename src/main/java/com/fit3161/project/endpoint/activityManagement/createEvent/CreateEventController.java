@@ -2,8 +2,6 @@ package com.fit3161.project.endpoint.activityManagement.createEvent;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fit3161.project.endpoint.activityManagement.createEvent.request.CreateEventRequest;
-import com.fit3161.project.endpoint.onboarding.CreateUser.CreateUserService;
-import com.fit3161.project.endpoint.onboarding.CreateUser.request.UserRequest;
 import com.fit3161.project.managers.ClientManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +24,6 @@ public class CreateEventController {
     @PostMapping("/api/events")
     public ResponseEntity<String> handler(@Valid @RequestBody CreateEventRequest request) throws JsonProcessingException {
         client.setRequest(request);
-        return new ResponseEntity<>(createEventService.getResponse(),createEventService.getStatus());
+        return new ResponseEntity<>(createEventService.createEvent(), createEventService.getStatus());
     }
 }

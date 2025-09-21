@@ -1,0 +1,6 @@
+title,type,startTime,endTime,location,description,clubs,priority
+Sponsorship Meeting,event,2025-08-10T14:00:00,2025-08-10T16:00:00,Building A,Quarterly sponsorship planning meeting,296cb907-b419-459f-a4d6-b1fc7d144099:11111111-2222-3333-4444-555555555555,
+Internal Planning,event,2025-08-15T10:00:00,2025-08-15T12:00:00,Room 202,Internal team alignment,296cb907-b419-459f-a4d6-b1fc7d144099,
+Prepare Sponsorship Draft,task,2025-08-17T00:00:00,,Remote,Draft sponsorship proposal,296cb907-b419-459f-a4d6-b1fc7d144099,HIGH
+Design Club Poster,task,2025-08-20T00:00:00,,Remote,Poster design for club promotion,11111111-2222-3333-4444-555555555555,MEDIUM
+Coding Workshop,event,2025-08-22T09:00:00,2025-08-22T12:00:00,Lab 101,Introductory coding workshop,296cb907-b419-459f-a4d6-b1fc7d144099,

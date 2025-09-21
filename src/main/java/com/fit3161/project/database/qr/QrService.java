@@ -11,6 +11,11 @@ public interface QrService {
         return getQrRepository().findQrRecordByEvent(eventRecord);
     }
 
+    default void removeQr(EventRecord eventRecord) {
+        getQrRepository().deleteQrRecordByEvent(eventRecord);
+    }
+
+
     default QrRecord createQrCode(Consumer<QrRecord.QrRecordBuilder> consumer) {
         final QrRecord.QrRecordBuilder qrBuilder = new QrRecord.QrRecordBuilder();
         consumer.accept(qrBuilder);

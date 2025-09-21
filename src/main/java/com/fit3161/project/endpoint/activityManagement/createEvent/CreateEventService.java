@@ -1,5 +1,7 @@
 package com.fit3161.project.endpoint.activityManagement.createEvent;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fit3161.project.database.Database;
 import com.fit3161.project.database.event.EventRecord;
 import com.fit3161.project.database.qr.QrRecord;
@@ -26,16 +28,10 @@ public class CreateEventService {
     private String qrEndpoint;
 
     public HttpStatus getStatus() {
-        return HttpStatus.NO_CONTENT;
+        return HttpStatus.OK;
     }
 
-    public String getResponse() {
-        createEvent();
-        return null;
-
-    }
-
-    public void createEvent() {
+    public String createEvent() throws JsonProcessingException {
         final CreateEventRequest request = client.getRequestAs(CreateEventRequest.class);
         //createEvent
         final EventRecord record = database.createEvent(event
@@ -78,6 +74,10 @@ public class CreateEventService {
         );
 
         database.saveQrRecord(qrRecord);
+
+        ObjectMapper mapper = new ObjectMapper();
+        CreateEventResponse signResponse = new CreateEventResponse(record.getEventId());
+        return mapper.writeValueAsString(signResponse);
 
 
     }

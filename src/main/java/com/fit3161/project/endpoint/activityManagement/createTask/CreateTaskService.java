@@ -1,5 +1,7 @@
 package com.fit3161.project.endpoint.activityManagement.createTask;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fit3161.project.database.Database;
 import com.fit3161.project.database.tasks.TaskRecord;
 import com.fit3161.project.endpoint.activityManagement.createTask.request.CreateTaskRequest;
@@ -19,10 +21,10 @@ public class CreateTaskService {
     private final ClientManager client;
 
     public HttpStatus getStatus() {
-        return HttpStatus.NO_CONTENT;
+        return HttpStatus.OK;
     }
 
-    public String getResponse() {
+    public String getResponse() throws JsonProcessingException {
         final CreateTaskRequest request = client.getRequestAs(CreateTaskRequest.class);
         //createEvent
         final TaskRecord record = database.createTask(event
@@ -52,7 +54,9 @@ public class CreateTaskService {
                     notification.task(record).notifyBeforeMinutes(request.getNotification().getNotifyBeforeMinutes()).userId(database.findUser(String.valueOf(request.getUserId())))
             );
         }
-        return null;
+        ObjectMapper mapper = new ObjectMapper();
+        CreateTaskResponse signResponse = new CreateTaskResponse(record.getTaskId());
+        return mapper.writeValueAsString(signResponse);
 
     }
 }

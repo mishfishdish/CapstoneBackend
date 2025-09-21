@@ -1,0 +1,41 @@
+{
+	"info": {
+		"_postman_id": "3b570813-7cb0-4af7-92bd-2732e295f8c9",
+		"name": "Import Activities",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46308101",
+		"_collection_link": "https://michellewong-8956492.postman.co/workspace/Michelle-Wong's-Workspace~eb3df9cc-fb49-40c3-8181-9b5c55b64548/collection/46308101-3b570813-7cb0-4af7-92bd-2732e295f8c9?action=share&source=collection_link&creator=46308101"
+	},
+	"item": [
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/michellewong/Downloads/SigmaSchedule_MassImport_Frontend_Template.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/import",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"import"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

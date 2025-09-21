@@ -21,9 +21,9 @@ public class DeleteTaskController {
     private final DeleteTaskService deleteTaskService;
     private final ClientManager client;
 
-    @DeleteMapping("/api/task/{tasktd}")
+    @DeleteMapping("/api/task/{taskId}")
     public ResponseEntity<String> handler(@Valid @PathVariable UUID taskId) {
         client.setTaskId(taskId);
-        return new ResponseEntity<>(deleteTaskService.getResponse(),deleteTaskService.getStatus());
+        return new ResponseEntity<>(deleteTaskService.getResponse(), deleteTaskService.getStatus());
     }
 }

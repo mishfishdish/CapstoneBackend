@@ -1,0 +1,483 @@
+{
+	"info": {
+		"_postman_id": "f1a74d0f-6dc4-4ac7-aa36-6e7d59cc8482",
+		"name": "Activity Management - Events",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46308101",
+		"_collection_link": "https://michellewong-8956492.postman.co/workspace/Michelle-Wong's-Workspace~eb3df9cc-fb49-40c3-8181-9b5c55b64548/collection/46308101-f1a74d0f-6dc4-4ac7-aa36-6e7d59cc8482?action=share&source=collection_link&creator=46308101"
+	},
+	"item": [
+		{
+			"name": "Create an event",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Step 1: Create User",
+							"pm.sendRequest({",
+							"    url: \"http://localhost:8080/api/auth\",",
+							"    method: \"POST\",",
+							"    header: { \"Content-Type\": \"application/json\" },",
+							"    body: {",
+							"        mode: \"raw\",",
+							"        raw: JSON.stringify({",
+							"            firstName: pm.variables.replaceIn(\"{{$randomFirstName}}\"),",
+							"            lastName: pm.variables.replaceIn(\"{{$randomLastName}}\"),",
+							"            email: pm.variables.replaceIn(\"{{$randomEmail}}\"),",
+							"            password: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\")",
+							"        })",
+							"    }",
+							"}, function (err, res) {",
+							"    if (err) {",
+							"        console.error(\"Error creating user:\", err);",
+							"    } else {",
+							"        let json = res.json();",
+							"        let userId = json.userId || json.id;",
+							"        pm.environment.set(\"userId\", userId);",
+							"        console.log(\"Created userId:\", userId);",
+							"",
+							"        // Step 2: Create Club (only after user is created)",
+							"        pm.sendRequest({",
+							"            url: \"http://localhost:8080/api/clubs\",",
+							"            method: \"POST\",",
+							"            header: { \"Content-Type\": \"application/json\" },",
+							"            body: {",
+							"                mode: \"raw\",",
+							"                raw: JSON.stringify({",
+							"                    name: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\"),",
+							"                    description: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\")",
+							"                })",
+							"            }",
+							"        }, function (err2, res2) {",
+							"            if (err2) {",
+							"                console.error(\"Error creating club:\", err2);",
+							"            } else {",
+							"                let json2 = res2.json();",
+							"                let clubId = json2.clubId || json2.id;",
+							"                pm.environment.set(\"clubId\", clubId);",
+							"                console.log(\"Created clubId:\", clubId);",
+							"            }",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"function randomDate(start, end) {",
+							"  let date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));",
+							"",
+							"  let yyyy = date.getFullYear();",
+							"  let mm = String(date.getMonth() + 1).padStart(2, '0');",
+							"  let dd = String(date.getDate()).padStart(2, '0');",
+							"  let hh = String(date.getHours()).padStart(2, '0');",
+							"  let min = String(date.getMinutes()).padStart(2, '0');",
+							"  let ss = String(date.getSeconds()).padStart(2, '0');",
+							"",
+							"  return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;",
+							"}",
+							"",
+							"// Define the overall range",
+							"let rangeStart = new Date(2020, 0, 1);  // Jan 1, 2020",
+							"let rangeEnd   = new Date();            // Now",
+							"",
+							"// Generate random start and end",
+							"let startDate = randomDate(rangeStart, rangeEnd);",
+							"let endDate   = randomDate(new Date(startDate), rangeEnd); // ensures end >= start",
+							"",
+							"pm.variables.set(\"randomStartDate\", startDate);",
+							"pm.variables.set(\"randomEndDate\", endDate);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"{{$randomAlphaNumeric}}\",\n  \"startTime\": \"{{randomStartDate}}\",\n  \"endTime\": \"{{randomEndDate}}\",\n  \"location\": \"{{$randomAlphaNumeric}}\",\n  \"description\": \"{{$randomAlphaNumeric}}\",\n  \"notification\": {\n    \"notifyBeforeMinutes\": 30\n  },\n  \"clubs\": [\"{{clubId}}\"],\n  \"userId\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/events",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create an event - multiple clubs",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Step 1: Create User",
+							"pm.sendRequest({",
+							"    url: \"http://localhost:8080/api/auth\",",
+							"    method: \"POST\",",
+							"    header: { \"Content-Type\": \"application/json\" },",
+							"    body: {",
+							"        mode: \"raw\",",
+							"        raw: JSON.stringify({",
+							"            firstName: pm.variables.replaceIn(\"{{$randomFirstName}}\"),",
+							"            lastName: pm.variables.replaceIn(\"{{$randomLastName}}\"),",
+							"            email: pm.variables.replaceIn(\"{{$randomEmail}}\"),",
+							"            password: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\")",
+							"        })",
+							"    }",
+							"}, function (err, res) {",
+							"    if (err) {",
+							"        console.error(\"Error creating user:\", err);",
+							"    } else {",
+							"        let json = res.json();",
+							"        let userId = json.userId || json.id;",
+							"        pm.environment.set(\"userId\", userId);",
+							"        console.log(\"Created userId:\", userId);",
+							"",
+							"        // Step 2a: Create Club 1",
+							"        pm.sendRequest({",
+							"            url: \"http://localhost:8080/api/clubs\",",
+							"            method: \"POST\",",
+							"            header: { \"Content-Type\": \"application/json\" },",
+							"            body: {",
+							"                mode: \"raw\",",
+							"                raw: JSON.stringify({",
+							"                    name: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\"),",
+							"                    description: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\")",
+							"                })",
+							"            }",
+							"        }, function (err2, res2) {",
+							"            if (err2) {",
+							"                console.error(\"Error creating club 1:\", err2);",
+							"            } else {",
+							"                let json2 = res2.json();",
+							"                let clubId1 = json2.clubId || json2.id;",
+							"                pm.environment.set(\"clubId1\", clubId1);",
+							"                console.log(\"Created clubId1:\", clubId1);",
+							"",
+							"                // Step 2b: Create Club 2 (after Club 1 is done)",
+							"                pm.sendRequest({",
+							"                    url: \"http://localhost:8080/api/clubs\",",
+							"                    method: \"POST\",",
+							"                    header: { \"Content-Type\": \"application/json\" },",
+							"                    body: {",
+							"                        mode: \"raw\",",
+							"                        raw: JSON.stringify({",
+							"                            name: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\"),",
+							"                            description: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\")",
+							"                        })",
+							"                    }",
+							"                }, function (err3, res3) {",
+							"                    if (err3) {",
+							"                        console.error(\"Error creating club 2:\", err3);",
+							"                    } else {",
+							"                        let json3 = res3.json();",
+							"                        let clubId2 = json3.clubId || json3.id;",
+							"                        pm.environment.set(\"clubId2\", clubId2);",
+							"                        console.log(\"Created clubId2:\", clubId2);",
+							"                    }",
+							"                });",
+							"            }",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"",
+							"// --- Random Date Generator ---",
+							"function randomDate(start, end) {",
+							"  let date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));",
+							"",
+							"  let yyyy = date.getFullYear();",
+							"  let mm = String(date.getMonth() + 1).padStart(2, '0');",
+							"  let dd = String(date.getDate()).padStart(2, '0');",
+							"  let hh = String(date.getHours()).padStart(2, '0');",
+							"  let min = String(date.getMinutes()).padStart(2, '0');",
+							"  let ss = String(date.getSeconds()).padStart(2, '0');",
+							"",
+							"  return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;",
+							"}",
+							"",
+							"let rangeStart = new Date(2020, 0, 1);",
+							"let rangeEnd   = new Date();",
+							"",
+							"let startDate = randomDate(rangeStart, rangeEnd);",
+							"let endDate   = randomDate(new Date(startDate), rangeEnd);",
+							"",
+							"pm.variables.set(\"randomStartDate\", startDate);",
+							"pm.variables.set(\"randomEndDate\", endDate);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"{{$randomAlphaNumeric}}\",\n  \"startTime\": \"{{randomStartDate}}\",\n  \"endTime\": \"{{randomEndDate}}\",\n  \"location\": \"{{$randomAlphaNumeric}}\",\n  \"description\": \"{{$randomAlphaNumeric}}\",\n  \"notification\": {\n    \"notifyBeforeMinutes\": 30\n  },\n  \"clubs\": [\"{{clubId1}}\", \"{{clubId2}}\"],\n  \"userId\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/events",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create an event with dependency",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// --- Random Date Generator ---",
+							"function randomDate(start, end) {",
+							"  let date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));",
+							"  let yyyy = date.getFullYear();",
+							"  let mm = String(date.getMonth() + 1).padStart(2, '0');",
+							"  let dd = String(date.getDate()).padStart(2, '0');",
+							"  let hh = String(date.getHours()).padStart(2, '0');",
+							"  let min = String(date.getMinutes()).padStart(2, '0');",
+							"  let ss = String(date.getSeconds()).padStart(2, '0');",
+							"  return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}Z`;",
+							"}",
+							"",
+							"// Generate random start/end times (next 7 days)",
+							"let startDate = randomDate(new Date(), new Date(Date.now() + 7*24*60*60*1000));",
+							"let endDate   = randomDate(new Date(Date.now() + 7*60*60*1000), new Date(Date.now() + 14*24*60*60*1000));",
+							"",
+							"pm.collectionVariables.set(\"randomStartDate\", startDate);",
+							"pm.collectionVariables.set(\"randomEndDate\", endDate);",
+							"",
+							"// Step 1: Create User",
+							"pm.sendRequest({",
+							"    url: \"http://localhost:8080/api/auth\",",
+							"    method: \"POST\",",
+							"    header: { \"Content-Type\": \"application/json\" },",
+							"    body: {",
+							"        mode: \"raw\",",
+							"        raw: JSON.stringify({",
+							"            firstName: pm.variables.replaceIn(\"{{$randomFirstName}}\"),",
+							"            lastName: pm.variables.replaceIn(\"{{$randomLastName}}\"),",
+							"            email: pm.variables.replaceIn(\"{{$randomEmail}}\"),",
+							"            password: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\")",
+							"        })",
+							"    }",
+							"}, function (err, res) {",
+							"    if (err) {",
+							"        console.error(\"Error creating user:\", err);",
+							"    } else {",
+							"        let json = res.json();",
+							"        let userId = json.userId || json.id;",
+							"        pm.collectionVariables.set(\"userId\", userId);",
+							"",
+							"        // Step 2: Create Club",
+							"        pm.sendRequest({",
+							"            url: \"http://localhost:8080/api/clubs\",",
+							"            method: \"POST\",",
+							"            header: { \"Content-Type\": \"application/json\" },",
+							"            body: {",
+							"                mode: \"raw\",",
+							"                raw: JSON.stringify({",
+							"                    name: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\"),",
+							"                    description: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\")",
+							"                })",
+							"            }",
+							"        }, function (err2, res2) {",
+							"            if (err2) {",
+							"                console.error(\"Error creating club:\", err2);",
+							"            } else {",
+							"                let json2 = res2.json();",
+							"                let clubId = json2.clubId || json2.id;",
+							"                pm.collectionVariables.set(\"clubId\", clubId);",
+							"",
+							"                // Step 3: Create Event (linked to user + club)",
+							"                pm.sendRequest({",
+							"                    url: \"http://localhost:8080/api/events\",",
+							"                    method: \"POST\",",
+							"                    header: { \"Content-Type\": \"application/json\" },",
+							"                    body: {",
+							"                        mode: \"raw\",",
+							"                        raw: JSON.stringify({",
+							"                            title: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\"),",
+							"                            startTime: startDate,",
+							"                            endTime: endDate,",
+							"                            location: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\"),",
+							"                            description: pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\"),",
+							"                            notification: {",
+							"                                notifyBeforeMinutes: 30",
+							"                            },",
+							"                            clubs: [clubId],",
+							"                            userId: userId",
+							"                        })",
+							"                    }",
+							"                }, function (err3, res3) {",
+							"                    if (err3) {",
+							"                        console.error(\"Error creating event:\", err3);",
+							"                    } else {",
+							"                        let json3 = res3.json();",
+							"                        let eventId = json3.eventId || json3.id;",
+							"                        pm.collectionVariables.set(\"eventId\", eventId);",
+							"                        console.log(\"Created eventId:\", eventId);",
+							"                    }",
+							"                });",
+							"            }",
+							"        });",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"{{$randomAlphaNumeric}}\",\n  \"startTime\": \"{{randomStartDate}}\",\n  \"endTime\": \"{{randomEndDate}}\",\n  \"location\": \"{{$randomAlphaNumeric}}\",\n  \"description\": \"{{$randomAlphaNumeric}}\",\n  \"notification\": {\n    \"notifyBeforeMinutes\": 30\n  },\n  \"parentEventId\": \"{{eventId}}\",\n  \"clubs\": [\"{{clubId}}\"],\n  \"userId\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/events",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit a created event",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"{{$randomAlphaNumeric}}\",\n  \"startTime\": \"{{randomStartDate}}\",\n  \"endTime\": \"{{randomEndDate}}\",\n  \"location\": \"{{$randomAlphaNumeric}}\",\n  \"description\": \"{{$randomAlphaNumeric}}\",\n  \"notification\": {\n    \"notifyBeforeMinutes\": 30\n  },\n  \"clubs\": [\"{{clubId}}\"],\n  \"userId\": \"{{userId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/events/{{eventId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"events",
+						"{{eventId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a created event",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/events/{{eventId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"events",
+						"{{eventId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "randomStartDate",
+			"value": ""
+		},
+		{
+			"key": "randomEndDate",
+			"value": ""
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "clubId1",
+			"value": ""
+		},
+		{
+			"key": "clubId2",
+			"value": ""
+		},
+		{
+			"key": "clubId",
+			"value": ""
+		},
+		{
+			"key": "eventId",
+			"value": ""
+		}
+	]
+}

@@ -8,4 +8,6 @@ import java.util.UUID;
 public interface QrRepository extends CrudRepository<QrRecord, UUID> {
     QrRecord findQrRecordByEvent(EventRecord eventRecord);
 
+    void deleteQrRecordByEvent(EventRecord eventRecord);
+
 }
