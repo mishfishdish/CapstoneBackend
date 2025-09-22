@@ -22,12 +22,10 @@ public class TaskClubs {
     private UUID id;
 
     @ManyToOne
-    @MapsId("taskId")
-    @JoinColumn(name = "task_id", referencedColumnName = "task_id")
+    @JoinColumn(name = "TASK_ID", nullable = false)
     private TaskRecord task;
 
     @ManyToOne
-    @MapsId("clubId")
-    @JoinColumn(name = "club_id", referencedColumnName = "club_id")
+    @JoinColumn(name = "CLUB_ID", nullable = false)
     private ClubRecord club;
 }

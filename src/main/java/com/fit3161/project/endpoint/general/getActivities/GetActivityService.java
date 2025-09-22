@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class GetActivityService {
     private final Database database;
     private final ClientManager client;
+    private String search;
 
     public HttpStatus getStatus() {
         return HttpStatus.OK;
@@ -32,6 +33,12 @@ public class GetActivityService {
                 client.getSort().equalsIgnoreCase("startTime") ? Sort.by("startTime") : Sort.by("activityTitle")
         );
 
-        return database.findAllByUserIdAndSearch(client.getUserId(), client.getClubId(), client.getSearch(), pageable);
+        if (client.getSearch() != null && !client.getSearch().isBlank()) {
+            search = "%" + client.getSearch().trim().toLowerCase() + "%";
+        } else {
+            search = "%";
+        }
+
+        return database.findAllByUserIdAndSearch(client.getClubId(), search, pageable);
     }
 }

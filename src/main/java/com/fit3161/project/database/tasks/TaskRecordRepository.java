@@ -130,61 +130,57 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
     List<Object[]> findTop5UpcomingTasksAndEvents(@Param("userId") UUID userId);
 
     @Query(value = """
-                (
-                    SELECT
-                        t.task_id AS activityId,
-                        t.title AS activityTitle,
-                        NULL AS startTime,
-                        t.deadline AS endTime,
-                        td.depends_on_event_id AS dependsOnEventId,
-                        'task' AS type
-                    FROM tasks t
-                    JOIN task_clubs tc ON t.task_id = tc.task_id
-                    JOIN user_clubs uc ON tc.club_id = uc.club_id
-                    LEFT JOIN task_dependencies td ON td.task_id = t.task_id AND td.club_id = uc.club_id
-                    WHERE uc.user_id = :userId
-                      AND (:clubId IS NULL OR uc.club_id = :clubId)
-                      AND (:search IS NULL OR :search = '' OR LOWER(t.title) LIKE LOWER(CONCAT('%', :search, '%')))
-                )
-                UNION
-                (
-                    SELECT
-                        e.event_id AS activityId,
-                        e.title AS activityTitle,
-                        e.start_time AS startTime,
-                        e.end_time AS endTime,
-                        NULL AS dependsOnEventId,
-                        'event' AS type
-                    FROM events e
-                    JOIN event_clubs ec ON e.event_id = ec.event_id
-                    JOIN user_clubs uc ON ec.club_id = uc.club_id
-                    WHERE uc.user_id = :userId
-                      AND (:clubId IS NULL OR uc.club_id = :clubId)
-                      AND (:search IS NULL OR :search = '' OR LOWER(e.title) LIKE LOWER(CONCAT('%', :search, '%')))
-                )
+            (
+                SELECT
+                    CAST(t.task_id AS VARCHAR)      AS activityId,
+                    t.title                         AS activityTitle,
+                    CAST(NULL AS TIMESTAMP)         AS startTime,
+                    t.deadline                      AS endTime,
+                    'task'                          AS type,
+                    td.depends_on_event_id          AS dependsOnEventId
+                FROM tasks t
+                JOIN task_clubs tc ON t.task_id = tc.task_id
+                LEFT JOIN task_dependencies td ON td.task_id = t.task_id
+                WHERE (:clubId IS NULL OR tc.club_id = CAST(:clubId AS UUID))
+                  AND LOWER(t.title) LIKE :search
+            )
+            UNION
+            (
+                SELECT
+                    CAST(e.event_id AS VARCHAR)     AS activityId,
+                    e.title                         AS activityTitle,
+                    e.start_time                    AS startTime,
+                    e.end_time                      AS endTime,
+                    'event'                         AS type,
+                    ed.depends_on_event_id          AS dependsOnEventId
+                FROM events e
+                JOIN event_clubs ec ON e.event_id = ec.event_id
+                LEFT JOIN event_dependencies ed ON ed.event_id = e.event_id
+                WHERE (:clubId IS NULL OR ec.club_id = CAST(:clubId AS UUID))
+                  AND LOWER(e.title) LIKE :search
+            )
             """,
             countQuery = """
-                        SELECT COUNT(*) FROM (
-                            (SELECT t.task_id FROM tasks t
-                                JOIN task_clubs tc ON t.task_id = tc.task_id
-                                JOIN user_clubs uc ON tc.club_id = uc.club_id
-                                WHERE uc.user_id = :userId
-                                  AND (:clubId IS NULL OR uc.club_id = :clubId)
-                                  AND (:search IS NULL OR :search = '' OR LOWER(t.title) LIKE LOWER(CONCAT('%', :search, '%'))))
-                            UNION
-                            (SELECT e.event_id FROM events e
-                                JOIN event_clubs ec ON e.event_id = ec.event_id
-                                JOIN user_clubs uc ON ec.club_id = uc.club_id
-                                WHERE uc.user_id = :userId
-                                  AND (:clubId IS NULL OR uc.club_id = :clubId)
-                                  AND (:search IS NULL OR :search = '' OR LOWER(e.title) LIKE LOWER(CONCAT('%', :search, '%'))))
-                        ) as combined
+                    SELECT COUNT(*) FROM (
+                        (SELECT 1
+                         FROM tasks t
+                         JOIN task_clubs tc ON t.task_id = tc.task_id
+                         WHERE (:clubId IS NULL OR tc.club_id = CAST(:clubId AS UUID))
+                           AND LOWER(t.title) LIKE :search)
+                        UNION
+                        (SELECT 1
+                         FROM events e
+                         JOIN event_clubs ec ON e.event_id = ec.event_id
+                         WHERE (:clubId IS NULL OR ec.club_id = CAST(:clubId AS UUID))
+                           AND LOWER(e.title) LIKE :search)
+                    ) as combined
                     """,
             nativeQuery = true)
     Page<ActivityResponse> findAllByUserIdAndSearch(
-            @Param("userId") UUID userId,
             @Param("clubId") UUID clubId,
             @Param("search") String search,
             Pageable pageable
     );
+
+
 }

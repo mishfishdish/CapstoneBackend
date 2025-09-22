@@ -103,8 +103,8 @@ public interface TasksService {
 
     }
 
-    default Page<ActivityResponse> findAllByUserIdAndSearch(UUID userId, UUID clubId, String search, Pageable pageable) {
-        return getTaskRecordRepository().findAllByUserIdAndSearch(userId, clubId, search, pageable);
+    default Page<ActivityResponse> findAllByUserIdAndSearch(UUID clubId, String search, Pageable pageable) {
+        return getTaskRecordRepository().findAllByUserIdAndSearch(clubId, search, pageable);
     }
 
 
