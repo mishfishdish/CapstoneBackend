@@ -55,19 +55,12 @@ paths:
             format: uuid
           description: The comparison club ID (optional)
         - in: query
-          name: startDate
+          name: month
           required: false
           schema:
             type: string
-            format: date-time
-          description: Start date for filtering attendanceAveragePoints (inclusive)
-        - in: query
-          name: endDate
-          required: false
-          schema:
-            type: string
-            format: date-time
-          description: End date for filtering attendanceAveragePoints (inclusive)
+            pattern: "^(0[1-9]|1[0-2])/\\d{4}$"
+          description: Month in MM/YYYY format to filter attendanceAveragePoints (e.g. month=09/2025)
       responses:
         "200":
           description: Analytics for the requested clubs
@@ -88,18 +81,18 @@ paths:
                   value:
                     primaryClub:
                       attendanceAveragePoints:
-                        - time: "2025-09-20T09:00:00Z"
+                        - month: "09/2025"
                           value: 63
-                        - time: "2025-09-23T09:00:00Z"
+                        - month: "10/2025"
                           value: 44
-                      attendanceAverageThisWeek: 45
+                      attendanceAverageThisMonth: 45
                       upcomingTask:
                         activityId: "b1a6f8fd-4c2f-4f8d-91f2-6d0b2c1a7e90"
                         activityTitle: "Committee Planning Session"
                         completionPercentage: 85
                     comparisonClub:
                       attendanceAveragePoints: []
-                      attendanceAverageThisWeek: 0
+                      attendanceAverageThisMonth: 0
                       upcomingTask: null
         "400":
           description: Invalid request parameters
