@@ -60,7 +60,7 @@ paths:
           schema:
             type: string
             pattern: "^(0[1-9]|1[0-2])/\\d{4}$"
-          description: Month in MM/YYYY format to filter attendanceAveragePoints (e.g. month=09/2025)
+          description: Single month in MM/YYYY format to filter results (e.g. month=09/2025). Response may contain zero or more datapoints for that month, each with a regular timestamp.
       responses:
         "200":
           description: Analytics for the requested clubs
@@ -80,10 +80,10 @@ paths:
                   summary: Two clubs, one with and one without an upcoming event
                   value:
                     primaryClub:
-                      attendanceAveragePoints:
-                        - month: "09/2025"
+                      attendancePercentage:
+                        - time: "2025-09-20T09:00:00Z"
                           value: 63
-                        - month: "10/2025"
+                        - time: "2025-09-23T09:00:00Z"
                           value: 44
                       attendanceAverageThisMonth: 45
                       upcomingTask:
@@ -91,7 +91,7 @@ paths:
                         activityTitle: "Committee Planning Session"
                         completionPercentage: 85
                     comparisonClub:
-                      attendanceAveragePoints: []
+                      attendancePercentage: []
                       attendanceAverageThisMonth: 0
                       upcomingTask: null
         "400":
@@ -145,7 +145,7 @@ components:
     ClubAnalytics:
       type: object
       properties:
-        attendanceAveragePoints:
+        attendancePercentage:
           type: array
           items:
             $ref: "#/components/schemas/AttendancePoint"
