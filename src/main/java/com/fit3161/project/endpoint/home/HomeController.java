@@ -5,8 +5,8 @@ import com.fit3161.project.managers.ClientManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,9 +22,9 @@ public class HomeController {
     private final HomeService homeService;
     private final ClientManager client;
 
-    @PostMapping("/api/homeview/{userId}")
+    @GetMapping("/api/homeview/{userId}")
     public ResponseEntity<DashboardResponse> handler(@Valid @PathVariable UUID userId) {
-        client.setEventId(userId);
+        client.setUserId(userId);
         return new ResponseEntity<>(homeService.getResponse(), homeService.getStatus());
     }
 }

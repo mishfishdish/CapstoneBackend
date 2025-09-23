@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface EventRecordRepository extends CrudRepository<EventRecord, UUID> {
@@ -18,5 +19,5 @@ public interface EventRecordRepository extends CrudRepository<EventRecord, UUID>
             JOIN user_clubs uc ON ec.club_id = uc.club_id
             WHERE uc.user_id = :userId
             """, nativeQuery = true)
-    Object[] findEventCountsForUser(@Param("userId") UUID userId);
+    List<Object[]> findEventCountsForUser(@Param("userId") UUID userId);
 }

@@ -22,7 +22,7 @@ public class HomeService {
     private final AuditService auditService;
 
     public HttpStatus getStatus() {
-        return HttpStatus.NO_CONTENT;
+        return HttpStatus.OK;
     }
 
     public DashboardResponse getResponse() {
@@ -30,7 +30,10 @@ public class HomeService {
 
         UserRecord existing = database.findUser(String.valueOf(client.getUserId()));
 
+
         if (existing == null) {
+            System.out.println("existing is null");
+
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
@@ -39,7 +42,7 @@ public class HomeService {
         dashboard.activities(database.findUpcoming5Activities(userId));
         dashboard.events(database.findEventStats(userId));
         dashboard.tasks(database.findTasksStats(userId));
-        dashboard.logs(auditService.getLatestAuditDescriptions());
+        dashboard.logs(null);
         return dashboard.build();
     }
 }

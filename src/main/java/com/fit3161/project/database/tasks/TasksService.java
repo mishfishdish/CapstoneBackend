@@ -82,10 +82,13 @@ public interface TasksService {
     }
 
     default TaskStats findTasksStats(UUID userId) {
-        Object[] result = getTaskRecordRepository().countCompletedAndTotalTasksForUserClubs(userId);
+        List<Object[]> result = getTaskRecordRepository().countCompletedAndTotalTasksForUserClubs(userId);
+        Object[] row = result.get(0);
+
         TaskStats stats = new TaskStats();
-        stats.setCompleted(((Number) result[0]).intValue());
-        stats.setTotal(((Number) result[1]).intValue());
+        stats.setCompleted(((Number) row[0]).intValue());
+        stats.setOverdue(((Number) row[1]).intValue());
+        stats.setNotCompleted(((Number) row[2]).intValue());
         return stats;
 
     }

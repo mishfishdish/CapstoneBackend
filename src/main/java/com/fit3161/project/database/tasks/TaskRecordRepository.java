@@ -92,18 +92,31 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
     List<EventResponse> findAllEventsByClubId(@Param("clubId") UUID clubId);
 
     @Query(value = """
-            SELECT 
-                COUNT(*) FILTER (WHERE t.completed = TRUE) AS completed_count,
-                COUNT(*) AS total_count
+            SELECT
+                COUNT(*) FILTER (
+                    WHERE t.completed = TRUE
+                      AND t.deadline < CURRENT_TIMESTAMP
+                ) AS completed_past_count,
+            
+                COUNT(*) FILTER (
+                    WHERE t.completed = FALSE
+                      AND t.deadline < CURRENT_TIMESTAMP
+                ) AS not_completed_past_count,
+            
+                COUNT(*) FILTER (
+                    WHERE t.deadline >= CURRENT_TIMESTAMP
+                ) AS not_past_count
+            
             FROM tasks t
             JOIN task_clubs tc ON t.task_id = tc.task_id
             JOIN user_clubs uc ON tc.club_id = uc.club_id
-            WHERE uc.user_id = :userId
+            WHERE uc.user_id = CAST(:userId AS uuid)
             """, nativeQuery = true)
-    Object[] countCompletedAndTotalTasksForUserClubs(@Param("userId") UUID userId);
+    List<Object[]> countCompletedAndTotalTasksForUserClubs(@Param("userId") UUID userId);
 
     @Query(value = """
-            SELECT title, datetime, type FROM (
+            SELECT title, datetime, type
+            FROM (
                 SELECT
                     t.title AS title,
                     t.deadline AS datetime,
@@ -111,7 +124,8 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
                 FROM tasks t
                 JOIN task_clubs tc ON t.task_id = tc.task_id
                 JOIN user_clubs uc ON tc.club_id = uc.club_id
-                WHERE uc.user_id = :userId AND t.deadline > CURRENT_TIMESTAMP
+                WHERE uc.user_id = CAST(:userId AS uuid)
+                  AND t.deadline > CURRENT_TIMESTAMP
             
                 UNION ALL
             
@@ -122,11 +136,11 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
                 FROM events e
                 JOIN event_clubs ec ON e.event_id = ec.event_id
                 JOIN user_clubs uc ON ec.club_id = uc.club_id
-                WHERE uc.user_id = :userId AND e.start_time > CURRENT_TIMESTAMP
+                WHERE uc.user_id = CAST(:userId AS uuid)
+                  AND e.start_time > CURRENT_TIMESTAMP
             ) combined
             ORDER BY datetime ASC
-            LIMIT 5
-            """, nativeQuery = true)
+            LIMIT 5;""", nativeQuery = true)
     List<Object[]> findTop5UpcomingTasksAndEvents(@Param("userId") UUID userId);
 
     @Query(value = """
