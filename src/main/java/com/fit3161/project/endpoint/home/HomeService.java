@@ -42,7 +42,7 @@ public class HomeService {
         dashboard.activities(database.findUpcoming5Activities(userId));
         dashboard.events(database.findEventStats(userId));
         dashboard.tasks(database.findTasksStats(userId));
-        dashboard.logs(null);
+        dashboard.logs(auditService.getLatestAuditDescriptions());
         return dashboard.build();
     }
 }

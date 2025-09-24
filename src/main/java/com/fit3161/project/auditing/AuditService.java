@@ -1,7 +1,8 @@
 package com.fit3161.project.auditing;
 
-import com.fit3161.project.database.event.*;
-import com.fit3161.project.database.tasks.*;
+import com.fit3161.project.database.Database;
+import com.fit3161.project.database.event.EventRecord;
+import com.fit3161.project.database.tasks.TaskRecord;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -21,38 +22,35 @@ public class AuditService {
 
     @PersistenceContext
     private final EntityManager entityManager;
-
-    private final TaskRecordRepository taskRepository;
-    private final TaskClubRepository taskClubRepository;
-    private final TaskDependencyRepository taskDependencyRepository;
-    private final EventRecordRepository eventRepository;
-    private final EventClubRepository eventClubRepository;
-    private final EventDependencyRepository eventDependencyRepository;
+    private final Database database;
 
     public List<String> getLatestAuditDescriptions() {
-        List<AuditActivity> all = new ArrayList<>();
+        // Fetch N from each entity (slightly > 10 to be safe)
+        List<AuditActivity> tasks = getAuditLog(TaskRecord.class, "taskId", 20);
+        List<AuditActivity> events = getAuditLog(EventRecord.class, "eventId", 20);
 
-        all.addAll(getAuditLog(TaskRecord.class, "taskId"));
-        all.addAll(getAuditLog(TaskClubs.class, "id"));
-        all.addAll(getAuditLog(TaskDependencies.class, "id"));
-        all.addAll(getAuditLog(EventRecord.class, "eventId"));
-        all.addAll(getAuditLog(EventClubs.class, "id"));
-        all.addAll(getAuditLog(EventDependencies.class, "id"));
+        // Merge efficiently using a priority queue
+        PriorityQueue<AuditActivity> pq = new PriorityQueue<>(
+                Comparator.comparing(AuditActivity::getRevisionTimestamp).reversed()
+        );
+        pq.addAll(tasks);
+        pq.addAll(events);
 
-        return all.stream()
-                .sorted(Comparator.comparing(AuditActivity::getRevisionTimestamp).reversed())
-                .limit(10)
-                .map(this::describeAuditActivity)
-                .collect(Collectors.toList());
+        // Extract global top 10
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < 10 && !pq.isEmpty(); i++) {
+            result.add(describeAuditActivity(pq.poll()));
+        }
+        return result;
     }
 
-    private List<AuditActivity> getAuditLog(Class<?> entityClass, String idField) {
+    private List<AuditActivity> getAuditLog(Class<?> entityClass, String idField, int maxResults) {
         AuditReader reader = AuditReaderFactory.get(entityManager);
 
         List<Object[]> results = reader.createQuery()
                 .forRevisionsOfEntity(entityClass, false, true)
                 .addOrder(AuditEntity.revisionProperty("timestamp").desc())
-                .setMaxResults(10)
+                .setMaxResults(maxResults) // fetch slightly more than 10
                 .getResultList();
 
         return results.stream()
@@ -65,7 +63,8 @@ public class AuditService {
                     try {
                         idValue = entity.getClass()
                                 .getMethod("get" + capitalize(idField))
-                                .invoke(entity).toString();
+                                .invoke(entity)
+                                .toString();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -88,36 +87,22 @@ public class AuditService {
         };
 
         return switch (activity.getEntityName()) {
-            case "Task", "TaskClub" -> {
-                var taskId = switch (activity.getEntityName()) {
-                    case "Task" -> UUID.fromString(activity.getEntityId());
-                    case "TaskClub" -> {
-                        var tc = taskClubRepository.findById(UUID.fromString(activity.getEntityId())).orElse(null);
-                        yield tc != null ? tc.getTask().getTaskId() : null;
-                    }
-                    default -> null;
-                };
-                var task = taskId != null ? taskRepository.findById(taskId).orElse(null) : null;
+            case "TaskRecord" -> {
+                var taskId = UUID.fromString(activity.getEntityId());
+                var task = taskId != null ? database.findTask(UUID.fromString(activity.getEntityId())) : null;
                 yield "Task '" + (task != null ? task.getTitle() : "[unknown]") +
-                        "' was " + action + " at " + activity.getRevisionTimestamp();
+                        "' was " + action;
             }
 
-            case "Event", "EventClub", "EventDependency" -> {
-                var eventId = switch (activity.getEntityName()) {
-                    case "Event" -> UUID.fromString(activity.getEntityId());
-                    case "EventClub" -> {
-                        var ec = eventClubRepository.findById(UUID.fromString(activity.getEntityId())).orElse(null);
-                        yield ec != null ? ec.getEvent().getEventId() : null;
-                    }
-                    default -> null;
-                };
-                var event = eventId != null ? eventRepository.findById(eventId).orElse(null) : null;
+            case "EventRecord" -> {
+                var eventId = UUID.fromString(activity.getEntityId());
+                var event = eventId != null ? database.findEvent(UUID.fromString(activity.getEntityId())) : null;
                 yield "Event '" + (event != null ? event.getTitle() : "[unknown]") +
-                        "' was " + action + " at " + activity.getRevisionTimestamp();
+                        "' was " + action;
             }
 
-            default -> activity.getEntityName() + " with ID " + activity.getEntityId() +
-                    " was " + action + " at " + activity.getRevisionTimestamp();
+            default -> activity.getEntityId() +
+                    " was " + action;
         };
     }
 
