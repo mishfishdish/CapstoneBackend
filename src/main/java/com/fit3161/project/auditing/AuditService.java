@@ -1,20 +1,15 @@
 package com.fit3161.project.auditing;
 
 import com.fit3161.project.database.Database;
-import com.fit3161.project.database.event.EventRecord;
-import com.fit3161.project.database.tasks.TaskRecord;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
-import org.hibernate.envers.DefaultRevisionEntity;
 import org.hibernate.envers.RevisionType;
-import org.hibernate.envers.query.AuditEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,59 +19,48 @@ public class AuditService {
     private final EntityManager entityManager;
     private final Database database;
 
+
     public List<String> getLatestAuditDescriptions() {
-        // Fetch N from each entity (slightly > 10 to be safe)
-        List<AuditActivity> tasks = getAuditLog(TaskRecord.class, "taskId", 20);
-        List<AuditActivity> events = getAuditLog(EventRecord.class, "eventId", 20);
+        String sql = """
+                    SELECT 'TaskRecord' AS entity_type,
+                           t.task_id AS entity_id,
+                           r.timestamp AS rev_timestamp,
+                           t.revtype AS rev_type
+                    FROM tasks_aud t
+                    JOIN revinfo r ON t.rev = r.id
+                
+                    UNION ALL
+                
+                    SELECT 'EventRecord' AS entity_type,
+                           e.event_id AS entity_id,
+                           r.timestamp AS rev_timestamp,
+                           e.revtype AS rev_type
+                    FROM events_aud e
+                    JOIN revinfo r ON e.rev = r.id
+                
+                    ORDER BY rev_timestamp DESC
+                    LIMIT 10
+                """;
 
-        // Merge efficiently using a priority queue
-        PriorityQueue<AuditActivity> pq = new PriorityQueue<>(
-                Comparator.comparing(AuditActivity::getRevisionTimestamp).reversed()
-        );
-        pq.addAll(tasks);
-        pq.addAll(events);
-
-        // Extract global top 10
-        List<String> result = new ArrayList<>();
-        for (int i = 0; i < 10 && !pq.isEmpty(); i++) {
-            result.add(describeAuditActivity(pq.poll()));
-        }
-        return result;
-    }
-
-    private List<AuditActivity> getAuditLog(Class<?> entityClass, String idField, int maxResults) {
-        AuditReader reader = AuditReaderFactory.get(entityManager);
-
-        List<Object[]> results = reader.createQuery()
-                .forRevisionsOfEntity(entityClass, false, true)
-                .addOrder(AuditEntity.revisionProperty("timestamp").desc())
-                .setMaxResults(maxResults) // fetch slightly more than 10
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = entityManager
+                .createNativeQuery(sql)
                 .getResultList();
 
-        return results.stream()
+        List<AuditActivity> activities = rows.stream()
                 .map(row -> {
-                    Object entity = row[0];
-                    DefaultRevisionEntity revision = (DefaultRevisionEntity) row[1];
-                    RevisionType type = (RevisionType) row[2];
+                    String entityType = (String) row[0];
+                    String entityId = row[1].toString();
+                    Date timestamp = new Date(((Number) row[2]).longValue()); // revision timestamp
+                    RevisionType revType = RevisionType.values()[((Number) row[3]).intValue()]; // SAFE
 
-                    String idValue = null;
-                    try {
-                        idValue = entity.getClass()
-                                .getMethod("get" + capitalize(idField))
-                                .invoke(entity)
-                                .toString();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    return new AuditActivity(
-                            entityClass.getSimpleName(),
-                            idValue,
-                            type,
-                            new Date(revision.getTimestamp())
-                    );
+                    return new AuditActivity(entityType, entityId, revType, timestamp);
                 })
-                .collect(Collectors.toList());
+                .toList();
+
+        return activities.stream()
+                .map(this::describeAuditActivity)
+                .toList();
     }
 
     private String describeAuditActivity(AuditActivity activity) {
