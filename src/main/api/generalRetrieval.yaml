@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: User Events API
+  title: User Clubs & Events API
   version: 1.0.0
-  description: API to retrieve events associated with a user based on their club memberships.
+  description: API to retrieve events and analytics for users based on their club memberships.
 
 paths:
   /api/users/{userId}/events:
@@ -35,65 +35,60 @@ paths:
 
   /api/clubs/analytics:
     get:
-      summary: Get analytics for one or more clubs
-      description: Retrieve attendance and upcoming task analytics for one or more clubs.
+      summary: Get analytics for all clubs a user belongs to
+      description: Retrieve attendance and task analytics for each club associated with a user.
       tags:
         - ClubAnalytics
       parameters:
         - in: query
-          name: clubId
+          name: userId
           required: true
           schema:
             type: string
             format: uuid
-          description: The primary club ID
-        - in: query
-          name: comparisonClubId
-          required: false
-          schema:
-            type: string
-            format: uuid
-          description: The comparison club ID (optional)
-        - in: query
-          name: month
-          required: false
-          schema:
-            type: string
-            pattern: "^(0[1-9]|1[0-2])/\\d{4}$"
-          description: Single month in MM/YYYY format to filter results (e.g. month=09/2025). Response may contain zero or more datapoints for that month, each with a regular timestamp.
+          description: The user ID to fetch analytics for
       responses:
         "200":
-          description: Analytics for the requested clubs
+          description: Analytics for all clubs the user is a member of
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  primaryClub:
-                    $ref: "#/components/schemas/ClubAnalytics"
-                  comparisonClub:
-                    oneOf:
-                      - $ref: "#/components/schemas/ClubAnalytics"
-                      - type: "null"
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserClubAnalytics"
               examples:
-                twoClubsExample:
-                  summary: Two clubs, one with and one without an upcoming event
+                exampleResponse:
+                  summary: Example response with two clubs
                   value:
-                    primaryClub:
-                      attendancePercentage:
-                        - time: "2025-09-20T09:00:00Z"
-                          value: 63
-                        - time: "2025-09-23T09:00:00Z"
-                          value: 44
-                      attendanceAverageThisMonth: 45
-                      upcomingTask:
-                        activityId: "b1a6f8fd-4c2f-4f8d-91f2-6d0b2c1a7e90"
-                        activityTitle: "Committee Planning Session"
-                        completionPercentage: 85
-                    comparisonClub:
-                      attendancePercentage: []
-                      attendanceAverageThisMonth: 0
-                      upcomingTask: null
+                    - clubId: "f1a6c8fd-4c2f-4f8d-91f2-6d0b2c1a7e91"
+                      clubName: "Photography Society"
+                      attendanceThisMonth: 42
+                      monthlyAverage: 100
+                      tasks:
+                        completed: 12
+                        overdue: 3
+                        ongoing: 5
+                      attendanceLast12Months:
+                        - month: "10/2024"
+                          value: 30
+                        - month: "11/2024"
+                          value: 25
+                        - month: "12/2024"
+                          value: 40
+                    - clubId: "c7b2d9ad-52d3-44f5-a3d0-23a8c6bcd921"
+                      clubName: "Debating Club"
+                      attendanceThisMonth: 18
+                      tasks:
+                        completed: 5
+                        overdue: 2
+                        ongoing: 7
+                      attendanceLast12Months:
+                        - month: "10/2024"
+                          value: 10
+                        - month: "11/2024"
+                          value: 15
+                        - month: "12/2024"
+                          value: 18
         "400":
           description: Invalid request parameters
           content:
@@ -104,9 +99,9 @@ paths:
                   error:
                     type: string
               example:
-                error: "Missing required parameter: clubId"
+                error: "Missing required parameter: userId"
         "404":
-          description: Club not found
+          description: User not found or no clubs associated
           content:
             application/json:
               schema:
@@ -115,7 +110,7 @@ paths:
                   error:
                     type: string
               example:
-                error: "One or more clubs not found"
+                error: "User not found or no clubs associated"
         "500":
           description: Internal server error
           content:
@@ -130,6 +125,54 @@ paths:
 
 components:
   schemas:
+    UserClubAnalytics:
+      type: object
+      properties:
+        clubId:
+          type: string
+          format: uuid
+        clubName:
+          type: string
+        attendanceThisMonth:
+          type: integer
+          description: Number of people who attended events this month
+        monthlyAverage:
+          type: integer
+          description: Average number of people attending per month
+        tasks:
+          type: object
+          properties:
+            completed:
+              type: integer
+            overdue:
+              type: integer
+            ongoing:
+              type: integer
+          required:
+            - completed
+            - overdue
+            - ongoing
+        attendanceLast12Months:
+          type: array
+          description: Monthly attendance counts for the past 12 months
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+                pattern: "^(0[1-9]|1[0-2])/\\d{4}$"
+              value:
+                type: integer
+            required:
+              - month
+              - value
+      required:
+        - clubId
+        - clubName
+        - attendanceThisMonth
+        - tasks
+        - attendanceLast12Months
+
     UserEventSummary:
       type: object
       properties:
@@ -141,48 +184,3 @@ components:
       required:
         - eventId
         - title
-
-    ClubAnalytics:
-      type: object
-      properties:
-        attendancePercentage:
-          type: array
-          items:
-            $ref: "#/components/schemas/AttendancePoint"
-        attendanceAverageThisWeek:
-          type: integer
-        upcomingTask:
-          oneOf:
-            - $ref: "#/components/schemas/UpcomingTask"
-            - type: "null"
-      required:
-        - attendanceAveragePoints
-        - attendanceAverageThisWeek
-        - upcomingTask
-
-    AttendancePoint:
-      type: object
-      properties:
-        time:
-          type: string
-          format: date-time
-        value:
-          type: integer
-      required:
-        - time
-        - value
-
-    UpcomingTask:
-      type: object
-      properties:
-        activityId:
-          type: string
-          format: uuid
-        activityTitle:
-          type: string
-        completionPercentage:
-          type: integer
-      required:
-        - activityId
-        - activityTitle
-        - completionPercentage
