@@ -33,14 +33,14 @@ paths:
         "500":
           description: Internal server error
 
-  /api/clubs/analytics:
+  /api/clubs/analytic/{userId}:
     get:
       summary: Get analytics for all clubs a user belongs to
       description: Retrieve attendance and task analytics for each club associated with a user.
       tags:
         - ClubAnalytics
       parameters:
-        - in: query
+        - in: path
           name: userId
           required: true
           schema:
