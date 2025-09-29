@@ -15,7 +15,7 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
     TaskRecord findTaskRecordByTaskId(UUID taskId);
 
     @Query(value = """
-                        (
+            (
                 SELECT
                     t.task_id AS activityId,
                     t.title AS activityTitle,
@@ -25,8 +25,8 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
                     'task' AS type
                 FROM tasks t
                 JOIN task_clubs tc ON t.task_id = tc.task_id
-                JOIN user_clubs uc ON tc.club_id = uc.club_id
                 LEFT JOIN task_dependencies td ON td.task_id = t.task_id
+                WHERE tc.club_id = :clubId
             )
             UNION
             (
@@ -39,9 +39,10 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
                     'event' AS type
                 FROM events e
                 JOIN event_clubs ec ON e.event_id = ec.event_id
-                JOIN user_clubs uc ON ec.club_id = uc.club_id
-                LEFT JOIN event_dependencies ed ON ed.event_id = e.event_id 
-            ) 
+                LEFT JOIN event_dependencies ed ON ed.event_id = e.event_id
+                WHERE ec.club_id = :clubId
+            )
+            ORDER BY startTime NULLS LAST, endTime NULLS LAST
             """, nativeQuery = true)
     List<ActivityResponse> findAllActivitiesByClubId(@Param("clubId") UUID clubId);
 

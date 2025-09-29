@@ -33,7 +33,7 @@ app:
   jwt-secret: 7WZgM8lrfzEp9yJVFqAD3vUMRxKzP5tCBwqYxLZd5Tk=
 
 qr:
-  endpoint: "http://capstoneapp-frontend.duckdns.org/attendance"
+  endpoint: "http://localhost:5173/attendance"
 
 invite:
-  endpoint: "http://capstoneapp-frontend.duckdns.org/register?token="
+  endpoint: "http://localhost:5173/register?token="
