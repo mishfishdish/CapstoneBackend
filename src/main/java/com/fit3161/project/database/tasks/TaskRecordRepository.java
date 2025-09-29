@@ -16,7 +16,7 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
 
     @Query(value = """
                         (
-                SELECT\s
+                SELECT
                     t.task_id AS activityId,
                     t.title AS activityTitle,
                     NULL AS startTime,
@@ -25,21 +25,22 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
                     'task' AS type
                 FROM tasks t
                 JOIN task_clubs tc ON t.task_id = tc.task_id
-                LEFT JOIN task_dependencies td ON td.task_id = t.task_id AND td.club_id = :clubId
-                WHERE tc.club_id = :clubId
+                JOIN user_clubs uc ON tc.club_id = uc.club_id
+                LEFT JOIN task_dependencies td ON td.task_id = t.task_id
             )
             UNION
             (
-                SELECT\s
+                SELECT
                     e.event_id AS activityId,
                     e.title AS activityTitle,
                     e.start_time AS startTime,
                     e.end_time AS endTime,
-                    NULL AS dependsOnEventId,
+                    ed.depends_on_event_id AS dependsOnEventId,
                     'event' AS type
                 FROM events e
                 JOIN event_clubs ec ON e.event_id = ec.event_id
-                WHERE ec.club_id = :clubId
+                JOIN user_clubs uc ON ec.club_id = uc.club_id
+                LEFT JOIN event_dependencies ed ON ed.event_id = e.event_id 
             ) 
             """, nativeQuery = true)
     List<ActivityResponse> findAllActivitiesByClubId(@Param("clubId") UUID clubId);
@@ -66,11 +67,12 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
                     e.title AS activityTitle,
                     e.start_time AS startTime,
                     e.end_time AS endTime,
-                    NULL AS dependsOnEventId,
+                    ed.depends_on_event_id AS dependsOnEventId,
                     'event' AS type
                 FROM events e
                 JOIN event_clubs ec ON e.event_id = ec.event_id
                 JOIN user_clubs uc ON ec.club_id = uc.club_id
+                LEFT JOIN event_dependencies td ON ed.event_id = e.event_id AND ed.club_id = ec.club_id
                 WHERE uc.user_id = :userId
             )
             """, nativeQuery = true)
