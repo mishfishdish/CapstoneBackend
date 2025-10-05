@@ -1,10 +1,12 @@
 package com.fit3161.project.database.event;
 
+import com.fit3161.project.endpoint.general.getUserEvents.UserEventSummary;
 import com.fit3161.project.endpoint.home.response.EventStats;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public interface EventService {
@@ -76,6 +78,15 @@ public interface EventService {
         stats.setTotal(((Number) row[1]).intValue());
         return stats;
 
+    }
+
+    default List<UserEventSummary> getEventsForUser(UUID userId) {
+        return getEventRecordRepository().findEventsByUserId(userId).stream()
+                .map(row -> UserEventSummary.builder()
+                        .eventId((UUID) row[0])
+                        .title((String) row[1])
+                        .build())
+                .collect(Collectors.toList());
     }
 
 }

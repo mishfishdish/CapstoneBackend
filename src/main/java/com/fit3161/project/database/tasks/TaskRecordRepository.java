@@ -81,7 +81,7 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
 
     @Query(value = """
             (
-                SELECT 
+                SELECT
                     e.event_id AS activityId,
                     e.title AS activityTitle,
                     e.start_time AS startTime,
@@ -100,16 +100,16 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
                     WHERE t.completed = TRUE
                       AND t.deadline < CURRENT_TIMESTAMP
                 ) AS completed_past_count,
-            
+
                 COUNT(*) FILTER (
                     WHERE t.completed = FALSE
                       AND t.deadline < CURRENT_TIMESTAMP
                 ) AS not_completed_past_count,
-            
+
                 COUNT(*) FILTER (
                     WHERE t.deadline >= CURRENT_TIMESTAMP
                 ) AS not_past_count
-            
+
             FROM tasks t
             JOIN task_clubs tc ON t.task_id = tc.task_id
             JOIN user_clubs uc ON tc.club_id = uc.club_id
@@ -129,9 +129,9 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
                 JOIN user_clubs uc ON tc.club_id = uc.club_id
                 WHERE uc.user_id = CAST(:userId AS uuid)
                   AND t.deadline > CURRENT_TIMESTAMP
-            
+
                 UNION ALL
-            
+
                 SELECT
                     e.title AS title,
                     e.start_time AS datetime,
@@ -198,6 +198,21 @@ public interface TaskRecordRepository extends CrudRepository<TaskRecord, UUID> {
             @Param("search") String search,
             Pageable pageable
     );
+
+    @Query(value = """
+            SELECT
+                COUNT(*) FILTER (WHERE t.completed = TRUE) AS completed_count,
+                COUNT(*) FILTER (WHERE t.completed = FALSE AND t.deadline < CURRENT_TIMESTAMP) AS overdue_count,
+                COUNT(*) FILTER (WHERE t.completed = FALSE AND t.deadline >= CURRENT_TIMESTAMP) AS ongoing_count
+            FROM tasks t
+            JOIN task_clubs tc ON t.task_id = tc.task_id
+            WHERE tc.club_id = :clubId
+              AND EXISTS (
+                  SELECT 1 FROM user_clubs uc
+                  WHERE uc.user_id = :userId AND uc.club_id = tc.club_id
+              )
+            """, nativeQuery = true)
+    List<Object[]> getTaskStatsByUserAndClub(@Param("userId") UUID userId, @Param("clubId") UUID clubId);
 
 
 }
