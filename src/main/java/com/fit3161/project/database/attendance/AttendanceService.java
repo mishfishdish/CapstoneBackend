@@ -15,4 +15,9 @@ public interface AttendanceService {
         consumer.accept(attendanceRecordBuilder);
         return getAttendanceRepository().save(attendanceRecordBuilder.build());
     }
+
+
+    default List<AttendanceRecord> getAttendanceRecords(final EventRecord eventRecord){
+        return getAttendanceRepository().findByEvent(eventRecord);
+    }
 }
