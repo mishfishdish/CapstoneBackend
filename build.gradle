@@ -102,6 +102,13 @@ tasks.register("startApp") {
 }
 
 jib {
+    from {
+        image = 'eclipse-temurin:21-jdk'
+        auth {   // 👇 leave empty to disable
+            username = ''
+            password = ''
+        }
+    }
     to {
         image = 'springboot-app'
     }
