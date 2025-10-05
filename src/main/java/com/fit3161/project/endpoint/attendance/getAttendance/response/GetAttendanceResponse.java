@@ -1,9 +1,9 @@
-package com.fit3161.project.endpoint.attendance.response;
+package com.fit3161.project.endpoint.attendance.getAttendance.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.UUID;
+import java.util.List;
 
 @Data
 @AllArgsConstructor

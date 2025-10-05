@@ -1,15 +1,18 @@
-package com.fit3161.project.endpoint.attendance;
+package com.fit3161.project.endpoint.attendance.getAttendance;
 
 import com.fit3161.project.database.Database;
 import com.fit3161.project.database.attendance.AttendanceRecord;
 import com.fit3161.project.database.event.EventRecord;
-import com.fit3161.project.endpoint.attendance.request.AttendanceRequest;
-import com.fit3161.project.endpoint.attendance.response.CreateResponse;
+import com.fit3161.project.endpoint.attendance.getAttendance.response.Attendee;
+import com.fit3161.project.endpoint.attendance.getAttendance.response.GetAttendanceResponse;
 import com.fit3161.project.managers.ClientManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Getter
@@ -22,13 +25,13 @@ public class GetAttendanceService {
         return HttpStatus.OK;
     }
 
-    public CreateResponse getResponse() {
-        
+    public GetAttendanceResponse getResponse() {
+
         final EventRecord event = database.findEvent(client.getEventId());
-        final List<AttendanceRecord> attendanceRecords = database.getAttendanceService().getAttendanceRecords(event);
+        final List<AttendanceRecord> attendanceRecords = database.getAttendanceRecords(event);
         return new GetAttendanceResponse(attendanceRecords.stream()
-                .map(record -> new Attendee(record.getFirstName(), record.getLastName(), record.getMemberType()))
+                .map(record -> new Attendee(record.getFirstName(), record.getLastName(), record.getMemberType().toString()))
                 .collect(Collectors.toList()));
-        
+
     }
 }
