@@ -1,225 +1,207 @@
--- V2__populate_data.sql (Neater Dependencies)
--- Photography: 2 flows
--- Tech: 1 flow (shared with Photography)
--- Baking: 2 flows
--- Attendance varied per event (15-35)
--- Task statuses mixed (completed, overdue, todo)
--- Deterministic UUIDs
--------------------------------------------------------------------
--- USERS
--------------------------------------------------------------------
-INSERT INTO users (user_id, first_name, last_name, email, password_hash, created_at, updated_at) VALUES
-                                                                                                     ('11111111-1111-1111-1111-111111111111','Clara','Smith','clara@example.com','hashed_pw1',NOW(),NOW()),
-                                                                                                     ('22222222-2222-2222-2222-222222222222','Bob','Jones','bob@example.com','hashed_pw2',NOW(),NOW())
-    ON CONFLICT (user_id) DO NOTHING;
+-- V2__seed_demo_data.sql
+-- Flyway migration to seed realistic demo data for SigmaSchedule.
+-- Includes users, clubs, tasks, events, dependencies, and randomized attendance (5–25 per event).
 
--------------------------------------------------------------------
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+DO $$
+DECLARE
+  -- USERS
+u_jeevan   UUID := gen_random_uuid();
+  u_james    UUID := gen_random_uuid();
+  u_michelle UUID := gen_random_uuid();
+  u_clara    UUID := gen_random_uuid();
+  u_luna     UUID := gen_random_uuid();
+  u_alex     UUID := gen_random_uuid();
+
+  -- CLUBS
+  c_music   UUID := gen_random_uuid();
+  c_env     UUID := gen_random_uuid();
+  c_fit     UUID := gen_random_uuid();
+  c_tech    UUID := gen_random_uuid();
+  c_cul     UUID := gen_random_uuid();
+
+  -- MUSIC SOCIETY EVENTS
+  e_ms_rehearsal  UUID := gen_random_uuid();
+  e_ms_concert    UUID := gen_random_uuid();
+  e_ms_feedback   UUID := gen_random_uuid();
+
+  -- ENVIRONMENTAL CLUB EVENTS
+  e_env_poster    UUID := gen_random_uuid();
+  e_env_cleanup   UUID := gen_random_uuid();
+  e_env_treeweek  UUID := gen_random_uuid();
+
+  -- CROSS-CLUB EVENT
+  e_harmony       UUID := gen_random_uuid();
+
+  -- TASKS
+  t_ms_book_aud   UUID := gen_random_uuid();
+  t_env_collect   UUID := gen_random_uuid();
+  t_ms_stage      UUID := gen_random_uuid();
+  t_env_ecobooth  UUID := gen_random_uuid();
+
+  -- VARIABLES
+  tmp_id UUID;
+  m INTEGER;
+  y INTEGER := 2025;
+  month_event UUID;
+  month_club UUID;
+  month_title TEXT;
+  attendee_id UUID;
+BEGIN
+  ---------------------------------------------------------------------------
+  -- USERS
+  ---------------------------------------------------------------------------
+INSERT INTO users (user_id, first_name, last_name, email, password_hash, created_at, updated_at)
+VALUES
+    (u_jeevan,   'Jeevan',   'Tharun',  'jeevan@example.com',   'x', now(), now()),
+    (u_james,    'James',    'Nguyen',  'james@example.com',    'x', now(), now()),
+    (u_michelle, 'Michelle', 'Wong',    'michelle@example.com', 'x', now(), now()),
+    (u_clara,    'Clara',    'Chan',    'clara@example.com',    'x', now(), now()),
+    (u_luna,     'Luna',     'Park',    'luna@example.com',     'x', now(), now()),
+    (u_alex,     'Alex',     'Taylor',  'alex@example.com',     'x', now(), now());
+
+---------------------------------------------------------------------------
 -- CLUBS
--------------------------------------------------------------------
-INSERT INTO clubs (club_id, name, description, created_at, updated_at) VALUES
-                                                                           ('aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1','Photography Club','Capturing creativity through photography.',NOW(),NOW()),
-                                                                           ('aaaaaaa2-aaaa-aaaa-aaaa-aaaaaaaaaaa2','Tech Club','Exploring the latest in technology.',NOW(),NOW()),
-                                                                           ('aaaaaaa3-aaaa-aaaa-aaaa-aaaaaaaaaaa3','Baking Club','Sharing the love of baking.',NOW(),NOW())
-    ON CONFLICT (club_id) DO NOTHING;
+---------------------------------------------------------------------------
+INSERT INTO clubs (club_id, name, description, created_at, updated_at)
+VALUES
+    (c_music, 'Music Society', 'Performances, rehearsals, and concerts.', now(), now()),
+    (c_env,   'Environmental Club', 'Sustainability initiatives on campus.', now(), now()),
+    (c_fit,   'Fitness & Wellness Society', 'Health, fitness, and well-being events.', now(), now()),
+    (c_tech,  'Tech Innovators Club', 'Tech talks, hack nights, and projects.', now(), now()),
+    (c_cul,   'Culinary Arts Club', 'Cooking workshops and food culture.', now(), now());
 
--------------------------------------------------------------------
+---------------------------------------------------------------------------
 -- MEMBERSHIPS
--------------------------------------------------------------------
+---------------------------------------------------------------------------
 INSERT INTO user_clubs (id, user_id, club_id, role_in_club, joined_at) VALUES
-                                                                           ('30000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','aaaaaaa3-aaaa-aaaa-aaaa-aaaaaaaaaaa3','MEMBER',NOW()),
-                                                                           ('30000000-0000-0000-0000-000000000002','22222222-2222-2222-2222-222222222222','aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1','MEMBER',NOW()),
-                                                                           ('30000000-0000-0000-0000-000000000003','22222222-2222-2222-2222-222222222222','aaaaaaa2-aaaa-aaaa-aaaa-aaaaaaaaaaa2','MEMBER',NOW()),
-                                                                           ('30000000-0000-0000-0000-000000000004','22222222-2222-2222-2222-222222222222','aaaaaaa3-aaaa-aaaa-aaaa-aaaaaaaaaaa3','MEMBER',NOW())
-    ON CONFLICT (id) DO NOTHING;
+                                                                           (gen_random_uuid(), u_michelle, c_music, 'admin', now() - INTERVAL '200 days'),
+                                                                           (gen_random_uuid(), u_clara,    c_music, 'member', now() - INTERVAL '180 days'),
+                                                                           (gen_random_uuid(), u_jeevan,   c_music, 'member', now() - INTERVAL '150 days'),
+                                                                           (gen_random_uuid(), u_luna,     c_env,   'member', now() - INTERVAL '160 days'),
+                                                                           (gen_random_uuid(), u_clara,    c_env,   'member', now() - INTERVAL '90 days'),
+                                                                           (gen_random_uuid(), u_alex,     c_fit,   'member', now() - INTERVAL '300 days'),
+                                                                           (gen_random_uuid(), u_alex,     c_tech,  'member', now() - INTERVAL '280 days'),
+                                                                           (gen_random_uuid(), u_alex,     c_cul,   'member', now() - INTERVAL '260 days');
 
--- EVENTS + TASKS
-INSERT INTO tasks (task_id,title,description,priority,deadline,completed,created_by,created_at,updated_at) VALUES ('20000000-0000-0000-0000-000000000001','Project Proposal Draft','Prep Draft','MEDIUM','2025-03-10',TRUE,'22222222-2222-2222-2222-222222222222',NOW(),NOW());
-INSERT INTO task_clubs VALUES ('32000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1');
-INSERT INTO events VALUES ('10000000-0000-0000-0000-000000000001','Photo Kickoff','2025-03-11','2025-03-20','Club Venue','Kickoff');
-INSERT INTO event_clubs VALUES ('30000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1');
-INSERT INTO tasks (task_id,title,description,priority,deadline,completed,created_by,created_at,updated_at) VALUES ('20000000-0000-0000-0000-000000000002','Workshop Prep','Prep Workshop','MEDIUM','2025-04-10',FALSE,'22222222-2222-2222-2222-222222222222',NOW(),NOW());
-INSERT INTO task_clubs VALUES ('32000000-0000-0000-0000-000000000002','20000000-0000-0000-0000-000000000002','aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1');
-INSERT INTO events VALUES ('10000000-0000-0000-0000-000000000002','Photography Workshop','2025-04-11','2025-04-30','Club Venue','Workshop');
-INSERT INTO event_clubs VALUES ('30000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002','aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1');
-INSERT INTO events VALUES ('10000000-0000-0000-0000-000000000003','Mid-Year Showcase','2025-05-05','2025-05-15','Club Venue','Showcase');
-INSERT INTO event_clubs VALUES ('30000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000003','aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1');
-INSERT INTO tasks (task_id,title,description,priority,deadline,completed,created_by,created_at,updated_at) VALUES ('20000000-0000-0000-0000-000000000003','Editing Prep','Prep Editing','MEDIUM','2025-09-10',FALSE,'22222222-2222-2222-2222-222222222222',NOW(),NOW());
-INSERT INTO task_clubs VALUES ('32000000-0000-0000-0000-000000000003','20000000-0000-0000-0000-000000000003','aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1');
-INSERT INTO events VALUES ('10000000-0000-0000-0000-000000000004','Photo Editing Marathon','2025-09-15','2025-10-15','Club Venue','Editing');
-INSERT INTO event_clubs VALUES ('30000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000004','aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1');
-INSERT INTO events VALUES ('10000000-0000-0000-0000-000000000005','End-of-Year Exhibition','2025-11-01','2025-11-10','Club Venue','Exhibition');
-INSERT INTO event_clubs VALUES ('30000000-0000-0000-0000-000000000005','10000000-0000-0000-0000-000000000005','aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1');
-INSERT INTO events VALUES ('10000000-0000-0000-0000-000000000020','Tech Kickoff (Shared)','2025-03-15','2025-03-20','Club Venue','Tech');
-INSERT INTO event_clubs VALUES ('30000000-0000-0000-0000-000000000020','10000000-0000-0000-0000-000000000020','aaaaaaa2-aaaa-aaaa-aaaa-aaaaaaaaaaa2');
-INSERT INTO tasks (task_id,title,description,priority,deadline,completed,created_by,created_at,updated_at) VALUES ('20000000-0000-0000-0000-000000000010','Tech Internal Task','Tech Task','MEDIUM','2025-03-30',TRUE,'22222222-2222-2222-2222-222222222222',NOW(),NOW());
-INSERT INTO task_clubs VALUES ('32000000-0000-0000-0000-000000000010','20000000-0000-0000-0000-000000000010','aaaaaaa2-aaaa-aaaa-aaaa-aaaaaaaaaaa2');
-INSERT INTO events VALUES ('10000000-0000-0000-0000-000000000021','Tech Final Showcase (Shared)','2025-11-05','2025-11-15','Club Venue','Tech');
-INSERT INTO event_clubs VALUES ('30000000-0000-0000-0000-000000000021','10000000-0000-0000-0000-000000000021','aaaaaaa2-aaaa-aaaa-aaaa-aaaaaaaaaaa2');
-INSERT INTO tasks (task_id,title,description,priority,deadline,completed,created_by,created_at,updated_at) VALUES ('20000000-0000-0000-0000-000000000020','Bake Sale Prep','Prep Bake','MEDIUM','2025-02-28',TRUE,'22222222-2222-2222-2222-222222222222',NOW(),NOW());
-INSERT INTO task_clubs VALUES ('32000000-0000-0000-0000-000000000020','20000000-0000-0000-0000-000000000020','aaaaaaa3-aaaa-aaaa-aaaa-aaaaaaaaaaa3');
-INSERT INTO events VALUES ('10000000-0000-0000-0000-000000000030','Campus Bake Sale','2025-03-01','2025-03-05','Club Venue','Bake');
-INSERT INTO event_clubs VALUES ('30000000-0000-0000-0000-000000000030','10000000-0000-0000-0000-000000000030','aaaaaaa3-aaaa-aaaa-aaaa-aaaaaaaaaaa3');
-INSERT INTO tasks (task_id,title,description,priority,deadline,completed,created_by,created_at,updated_at) VALUES ('20000000-0000-0000-0000-000000000021','Cake Prep','Prep Cake','MEDIUM','2025-06-25',FALSE,'22222222-2222-2222-2222-222222222222',NOW(),NOW());
-INSERT INTO task_clubs VALUES ('32000000-0000-0000-0000-000000000021','20000000-0000-0000-0000-000000000021','aaaaaaa3-aaaa-aaaa-aaaa-aaaaaaaaaaa3');
-INSERT INTO events VALUES ('10000000-0000-0000-0000-000000000031','Cake Festival','2025-07-01','2025-07-07','Club Venue','Cake');
-INSERT INTO event_clubs VALUES ('30000000-0000-0000-0000-000000000031','10000000-0000-0000-0000-000000000031','aaaaaaa3-aaaa-aaaa-aaaa-aaaaaaaaaaa3');
+---------------------------------------------------------------------------
+-- MUSIC SOCIETY EVENTS
+---------------------------------------------------------------------------
+INSERT INTO events (event_id, title, start_time, end_time, location, description) VALUES
+                                                                                      (e_ms_rehearsal, 'Rehearsal Scheduling', make_timestamp(y, 2, 10, 17, 00, 00), make_timestamp(y, 2, 10, 19, 00, 00), 'Music Room A', 'Season rehearsal block planning'),
+                                                                                      (e_ms_concert,   'Semester Concert',     make_timestamp(y, 3, 20, 18, 30, 00), make_timestamp(y, 3, 20, 21, 30, 00), 'Main Auditorium', 'Major semester performance'),
+                                                                                      (e_ms_feedback,  'Post-Concert Feedback',make_timestamp(y, 4,  1, 18, 00, 00), make_timestamp(y, 4,  1, 19, 30, 00), 'Seminar Room 2',  'Retrospective and feedback session');
 
--- ATTENDANCE (varied counts)
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','Attendee1','LN1','MEMBER',NOW() - interval '1 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000001','Attendee2','LN2','MEMBER',NOW() - interval '2 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000001','Attendee3','LN3','MEMBER',NOW() - interval '3 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000001','Attendee4','LN4','MEMBER',NOW() - interval '4 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000005','10000000-0000-0000-0000-000000000001','Attendee5','LN5','MEMBER',NOW() - interval '5 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000006','10000000-0000-0000-0000-000000000001','Attendee6','LN6','MEMBER',NOW() - interval '6 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000007','10000000-0000-0000-0000-000000000001','Attendee7','LN7','MEMBER',NOW() - interval '7 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000008','10000000-0000-0000-0000-000000000001','Attendee8','LN8','MEMBER',NOW() - interval '8 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000009','10000000-0000-0000-0000-000000000001','Attendee9','LN9','MEMBER',NOW() - interval '9 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000010','10000000-0000-0000-0000-000000000001','Attendee10','LN10','MEMBER',NOW() - interval '10 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000011','10000000-0000-0000-0000-000000000001','Attendee11','LN11','MEMBER',NOW() - interval '11 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000012','10000000-0000-0000-0000-000000000001','Attendee12','LN12','MEMBER',NOW() - interval '12 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000013','10000000-0000-0000-0000-000000000001','Attendee13','LN13','MEMBER',NOW() - interval '13 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000014','10000000-0000-0000-0000-000000000001','Attendee14','LN14','MEMBER',NOW() - interval '14 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000015','10000000-0000-0000-0000-000000000001','Attendee15','LN15','MEMBER',NOW() - interval '15 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000016','10000000-0000-0000-0000-000000000001','Attendee16','LN16','MEMBER',NOW() - interval '16 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000017','10000000-0000-0000-0000-000000000001','Attendee17','LN17','MEMBER',NOW() - interval '17 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000018','10000000-0000-0000-0000-000000000001','Attendee18','LN18','MEMBER',NOW() - interval '18 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000019','10000000-0000-0000-0000-000000000002','Attendee1','LN1','MEMBER',NOW() - interval '1 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000020','10000000-0000-0000-0000-000000000002','Attendee2','LN2','MEMBER',NOW() - interval '2 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000021','10000000-0000-0000-0000-000000000002','Attendee3','LN3','MEMBER',NOW() - interval '3 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000022','10000000-0000-0000-0000-000000000002','Attendee4','LN4','MEMBER',NOW() - interval '4 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000023','10000000-0000-0000-0000-000000000002','Attendee5','LN5','MEMBER',NOW() - interval '5 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000024','10000000-0000-0000-0000-000000000002','Attendee6','LN6','MEMBER',NOW() - interval '6 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000025','10000000-0000-0000-0000-000000000002','Attendee7','LN7','MEMBER',NOW() - interval '7 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000026','10000000-0000-0000-0000-000000000002','Attendee8','LN8','MEMBER',NOW() - interval '8 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000027','10000000-0000-0000-0000-000000000002','Attendee9','LN9','MEMBER',NOW() - interval '9 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000028','10000000-0000-0000-0000-000000000002','Attendee10','LN10','MEMBER',NOW() - interval '10 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000029','10000000-0000-0000-0000-000000000002','Attendee11','LN11','MEMBER',NOW() - interval '11 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000030','10000000-0000-0000-0000-000000000002','Attendee12','LN12','MEMBER',NOW() - interval '12 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000031','10000000-0000-0000-0000-000000000002','Attendee13','LN13','MEMBER',NOW() - interval '13 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000032','10000000-0000-0000-0000-000000000002','Attendee14','LN14','MEMBER',NOW() - interval '14 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000033','10000000-0000-0000-0000-000000000002','Attendee15','LN15','MEMBER',NOW() - interval '15 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000034','10000000-0000-0000-0000-000000000002','Attendee16','LN16','MEMBER',NOW() - interval '16 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000035','10000000-0000-0000-0000-000000000002','Attendee17','LN17','MEMBER',NOW() - interval '17 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000036','10000000-0000-0000-0000-000000000002','Attendee18','LN18','MEMBER',NOW() - interval '18 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000037','10000000-0000-0000-0000-000000000002','Attendee19','LN19','MEMBER',NOW() - interval '19 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000038','10000000-0000-0000-0000-000000000002','Attendee20','LN20','MEMBER',NOW() - interval '20 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000039','10000000-0000-0000-0000-000000000002','Attendee21','LN21','MEMBER',NOW() - interval '21 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000040','10000000-0000-0000-0000-000000000002','Attendee22','LN22','MEMBER',NOW() - interval '22 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000041','10000000-0000-0000-0000-000000000003','Attendee1','LN1','MEMBER',NOW() - interval '1 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000042','10000000-0000-0000-0000-000000000003','Attendee2','LN2','MEMBER',NOW() - interval '2 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000043','10000000-0000-0000-0000-000000000003','Attendee3','LN3','MEMBER',NOW() - interval '3 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000044','10000000-0000-0000-0000-000000000003','Attendee4','LN4','MEMBER',NOW() - interval '4 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000045','10000000-0000-0000-0000-000000000003','Attendee5','LN5','MEMBER',NOW() - interval '5 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000046','10000000-0000-0000-0000-000000000003','Attendee6','LN6','MEMBER',NOW() - interval '6 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000047','10000000-0000-0000-0000-000000000003','Attendee7','LN7','MEMBER',NOW() - interval '7 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000048','10000000-0000-0000-0000-000000000003','Attendee8','LN8','MEMBER',NOW() - interval '8 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000049','10000000-0000-0000-0000-000000000003','Attendee9','LN9','MEMBER',NOW() - interval '9 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000050','10000000-0000-0000-0000-000000000003','Attendee10','LN10','MEMBER',NOW() - interval '10 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000051','10000000-0000-0000-0000-000000000003','Attendee11','LN11','MEMBER',NOW() - interval '11 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000052','10000000-0000-0000-0000-000000000003','Attendee12','LN12','MEMBER',NOW() - interval '12 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000053','10000000-0000-0000-0000-000000000003','Attendee13','LN13','MEMBER',NOW() - interval '13 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000054','10000000-0000-0000-0000-000000000003','Attendee14','LN14','MEMBER',NOW() - interval '14 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000055','10000000-0000-0000-0000-000000000003','Attendee15','LN15','MEMBER',NOW() - interval '15 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000056','10000000-0000-0000-0000-000000000003','Attendee16','LN16','MEMBER',NOW() - interval '16 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000057','10000000-0000-0000-0000-000000000003','Attendee17','LN17','MEMBER',NOW() - interval '17 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000058','10000000-0000-0000-0000-000000000003','Attendee18','LN18','MEMBER',NOW() - interval '18 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000059','10000000-0000-0000-0000-000000000003','Attendee19','LN19','MEMBER',NOW() - interval '19 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000060','10000000-0000-0000-0000-000000000003','Attendee20','LN20','MEMBER',NOW() - interval '20 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000061','10000000-0000-0000-0000-000000000003','Attendee21','LN21','MEMBER',NOW() - interval '21 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000062','10000000-0000-0000-0000-000000000003','Attendee22','LN22','MEMBER',NOW() - interval '22 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000063','10000000-0000-0000-0000-000000000003','Attendee23','LN23','MEMBER',NOW() - interval '23 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000064','10000000-0000-0000-0000-000000000003','Attendee24','LN24','MEMBER',NOW() - interval '24 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000065','10000000-0000-0000-0000-000000000003','Attendee25','LN25','MEMBER',NOW() - interval '25 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000066','10000000-0000-0000-0000-000000000003','Attendee26','LN26','MEMBER',NOW() - interval '26 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000067','10000000-0000-0000-0000-000000000003','Attendee27','LN27','MEMBER',NOW() - interval '27 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000068','10000000-0000-0000-0000-000000000003','Attendee28','LN28','MEMBER',NOW() - interval '28 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000069','10000000-0000-0000-0000-000000000003','Attendee29','LN29','MEMBER',NOW() - interval '29 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000070','10000000-0000-0000-0000-000000000003','Attendee30','LN30','MEMBER',NOW() - interval '30 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000071','10000000-0000-0000-0000-000000000003','Attendee31','LN31','MEMBER',NOW() - interval '31 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000072','10000000-0000-0000-0000-000000000003','Attendee32','LN32','MEMBER',NOW() - interval '32 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000073','10000000-0000-0000-0000-000000000003','Attendee33','LN33','MEMBER',NOW() - interval '33 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000074','10000000-0000-0000-0000-000000000020','Attendee1','LN1','MEMBER',NOW() - interval '1 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000075','10000000-0000-0000-0000-000000000020','Attendee2','LN2','MEMBER',NOW() - interval '2 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000076','10000000-0000-0000-0000-000000000020','Attendee3','LN3','MEMBER',NOW() - interval '3 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000077','10000000-0000-0000-0000-000000000020','Attendee4','LN4','MEMBER',NOW() - interval '4 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000078','10000000-0000-0000-0000-000000000020','Attendee5','LN5','MEMBER',NOW() - interval '5 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000079','10000000-0000-0000-0000-000000000020','Attendee6','LN6','MEMBER',NOW() - interval '6 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000080','10000000-0000-0000-0000-000000000020','Attendee7','LN7','MEMBER',NOW() - interval '7 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000081','10000000-0000-0000-0000-000000000020','Attendee8','LN8','MEMBER',NOW() - interval '8 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000082','10000000-0000-0000-0000-000000000020','Attendee9','LN9','MEMBER',NOW() - interval '9 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000083','10000000-0000-0000-0000-000000000020','Attendee10','LN10','MEMBER',NOW() - interval '10 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000084','10000000-0000-0000-0000-000000000020','Attendee11','LN11','MEMBER',NOW() - interval '11 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000085','10000000-0000-0000-0000-000000000020','Attendee12','LN12','MEMBER',NOW() - interval '12 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000086','10000000-0000-0000-0000-000000000020','Attendee13','LN13','MEMBER',NOW() - interval '13 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000087','10000000-0000-0000-0000-000000000020','Attendee14','LN14','MEMBER',NOW() - interval '14 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000088','10000000-0000-0000-0000-000000000020','Attendee15','LN15','MEMBER',NOW() - interval '15 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000089','10000000-0000-0000-0000-000000000020','Attendee16','LN16','MEMBER',NOW() - interval '16 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000090','10000000-0000-0000-0000-000000000020','Attendee17','LN17','MEMBER',NOW() - interval '17 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000091','10000000-0000-0000-0000-000000000020','Attendee18','LN18','MEMBER',NOW() - interval '18 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000092','10000000-0000-0000-0000-000000000020','Attendee19','LN19','MEMBER',NOW() - interval '19 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000093','10000000-0000-0000-0000-000000000020','Attendee20','LN20','MEMBER',NOW() - interval '20 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000094','10000000-0000-0000-0000-000000000020','Attendee21','LN21','MEMBER',NOW() - interval '21 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000095','10000000-0000-0000-0000-000000000020','Attendee22','LN22','MEMBER',NOW() - interval '22 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000096','10000000-0000-0000-0000-000000000020','Attendee23','LN23','MEMBER',NOW() - interval '23 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000097','10000000-0000-0000-0000-000000000020','Attendee24','LN24','MEMBER',NOW() - interval '24 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000098','10000000-0000-0000-0000-000000000020','Attendee25','LN25','MEMBER',NOW() - interval '25 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000099','10000000-0000-0000-0000-000000000030','Attendee1','LN1','MEMBER',NOW() - interval '1 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000100','10000000-0000-0000-0000-000000000030','Attendee2','LN2','MEMBER',NOW() - interval '2 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000101','10000000-0000-0000-0000-000000000030','Attendee3','LN3','MEMBER',NOW() - interval '3 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000102','10000000-0000-0000-0000-000000000030','Attendee4','LN4','MEMBER',NOW() - interval '4 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000103','10000000-0000-0000-0000-000000000030','Attendee5','LN5','MEMBER',NOW() - interval '5 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000104','10000000-0000-0000-0000-000000000030','Attendee6','LN6','MEMBER',NOW() - interval '6 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000105','10000000-0000-0000-0000-000000000030','Attendee7','LN7','MEMBER',NOW() - interval '7 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000106','10000000-0000-0000-0000-000000000030','Attendee8','LN8','MEMBER',NOW() - interval '8 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000107','10000000-0000-0000-0000-000000000030','Attendee9','LN9','MEMBER',NOW() - interval '9 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000108','10000000-0000-0000-0000-000000000030','Attendee10','LN10','MEMBER',NOW() - interval '10 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000109','10000000-0000-0000-0000-000000000030','Attendee11','LN11','MEMBER',NOW() - interval '11 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000110','10000000-0000-0000-0000-000000000030','Attendee12','LN12','MEMBER',NOW() - interval '12 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000111','10000000-0000-0000-0000-000000000030','Attendee13','LN13','MEMBER',NOW() - interval '13 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000112','10000000-0000-0000-0000-000000000030','Attendee14','LN14','MEMBER',NOW() - interval '14 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000113','10000000-0000-0000-0000-000000000030','Attendee15','LN15','MEMBER',NOW() - interval '15 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000114','10000000-0000-0000-0000-000000000030','Attendee16','LN16','MEMBER',NOW() - interval '16 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000115','10000000-0000-0000-0000-000000000030','Attendee17','LN17','MEMBER',NOW() - interval '17 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000116','10000000-0000-0000-0000-000000000030','Attendee18','LN18','MEMBER',NOW() - interval '18 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000117','10000000-0000-0000-0000-000000000030','Attendee19','LN19','MEMBER',NOW() - interval '19 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000118','10000000-0000-0000-0000-000000000031','Attendee1','LN1','MEMBER',NOW() - interval '1 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000119','10000000-0000-0000-0000-000000000031','Attendee2','LN2','MEMBER',NOW() - interval '2 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000120','10000000-0000-0000-0000-000000000031','Attendee3','LN3','MEMBER',NOW() - interval '3 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000121','10000000-0000-0000-0000-000000000031','Attendee4','LN4','MEMBER',NOW() - interval '4 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000122','10000000-0000-0000-0000-000000000031','Attendee5','LN5','MEMBER',NOW() - interval '5 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000123','10000000-0000-0000-0000-000000000031','Attendee6','LN6','MEMBER',NOW() - interval '6 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000124','10000000-0000-0000-0000-000000000031','Attendee7','LN7','MEMBER',NOW() - interval '7 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000125','10000000-0000-0000-0000-000000000031','Attendee8','LN8','MEMBER',NOW() - interval '8 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000126','10000000-0000-0000-0000-000000000031','Attendee9','LN9','MEMBER',NOW() - interval '9 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000127','10000000-0000-0000-0000-000000000031','Attendee10','LN10','MEMBER',NOW() - interval '10 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000128','10000000-0000-0000-0000-000000000031','Attendee11','LN11','MEMBER',NOW() - interval '11 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000129','10000000-0000-0000-0000-000000000031','Attendee12','LN12','MEMBER',NOW() - interval '12 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000130','10000000-0000-0000-0000-000000000031','Attendee13','LN13','MEMBER',NOW() - interval '13 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000131','10000000-0000-0000-0000-000000000031','Attendee14','LN14','MEMBER',NOW() - interval '14 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000132','10000000-0000-0000-0000-000000000031','Attendee15','LN15','MEMBER',NOW() - interval '15 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000133','10000000-0000-0000-0000-000000000031','Attendee16','LN16','MEMBER',NOW() - interval '16 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000134','10000000-0000-0000-0000-000000000031','Attendee17','LN17','MEMBER',NOW() - interval '17 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000135','10000000-0000-0000-0000-000000000031','Attendee18','LN18','MEMBER',NOW() - interval '18 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000136','10000000-0000-0000-0000-000000000031','Attendee19','LN19','MEMBER',NOW() - interval '19 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000137','10000000-0000-0000-0000-000000000031','Attendee20','LN20','MEMBER',NOW() - interval '20 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000138','10000000-0000-0000-0000-000000000031','Attendee21','LN21','MEMBER',NOW() - interval '21 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000139','10000000-0000-0000-0000-000000000031','Attendee22','LN22','MEMBER',NOW() - interval '22 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000140','10000000-0000-0000-0000-000000000031','Attendee23','LN23','MEMBER',NOW() - interval '23 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000141','10000000-0000-0000-0000-000000000031','Attendee24','LN24','MEMBER',NOW() - interval '24 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000142','10000000-0000-0000-0000-000000000031','Attendee25','LN25','MEMBER',NOW() - interval '25 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000143','10000000-0000-0000-0000-000000000031','Attendee26','LN26','MEMBER',NOW() - interval '26 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000144','10000000-0000-0000-0000-000000000031','Attendee27','LN27','MEMBER',NOW() - interval '27 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000145','10000000-0000-0000-0000-000000000031','Attendee28','LN28','MEMBER',NOW() - interval '28 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000146','10000000-0000-0000-0000-000000000031','Attendee29','LN29','MEMBER',NOW() - interval '29 days');
-INSERT INTO attendance (attendance_id,event_id,first_name,last_name,member_type,timestamp) VALUES ('40000000-0000-0000-0000-000000000147','10000000-0000-0000-0000-000000000031','Attendee30','LN30','MEMBER',NOW() - interval '30 days');
+INSERT INTO event_clubs (id, event_id, club_id) VALUES
+                                                    (gen_random_uuid(), e_ms_rehearsal, c_music),
+                                                    (gen_random_uuid(), e_ms_concert,   c_music),
+                                                    (gen_random_uuid(), e_ms_feedback,  c_music);
 
--- TASK DEPENDENCIES
-INSERT INTO task_dependencies VALUES ('33000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000002','aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaa1','10000000-0000-0000-0000-000000000001');
-INSERT INTO task_dependencies VALUES ('33000000-0000-0000-0000-000000000002','20000000-0000-0000-0000-000000000010','aaaaaaa2-aaaa-aaaa-aaaa-aaaaaaaaaaa2','10000000-0000-0000-0000-000000000020');
-INSERT INTO task_dependencies VALUES ('33000000-0000-0000-0000-000000000003','20000000-0000-0000-0000-000000000021','aaaaaaa3-aaaa-aaaa-aaaa-aaaaaaaaaaa3','10000000-0000-0000-0000-000000000031');
+INSERT INTO event_dependencies (id, event_id, depends_on_event_id)
+VALUES
+    (gen_random_uuid(), e_ms_concert, e_ms_rehearsal),
+    (gen_random_uuid(), e_ms_feedback, e_ms_concert);
 
--- EVENT DEPENDENCIES (chains)
-INSERT INTO event_dependencies VALUES ('31000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000002');
-INSERT INTO event_dependencies VALUES ('31000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000003');
-INSERT INTO event_dependencies VALUES ('31000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000005');
-INSERT INTO event_dependencies VALUES ('31000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000030','10000000-0000-0000-0000-000000000031');
+---------------------------------------------------------------------------
+-- ENVIRONMENTAL CLUB EVENTS
+---------------------------------------------------------------------------
+INSERT INTO events (event_id, title, start_time, end_time, location, description) VALUES
+                                                                                      (e_env_poster,   'Poster Designing Session', make_timestamp(y, 2, 15, 15, 00, 00), make_timestamp(y, 2, 15, 17, 00, 00), 'Design Lab', 'Create awareness posters'),
+                                                                                      (e_env_cleanup,  'Campus Clean Up Week',     make_timestamp(y, 4,  8, 10, 00, 00), make_timestamp(y, 4, 12, 16, 00, 00), 'Campus Grounds', 'Week-long clean up initiative'),
+                                                                                      (e_env_treeweek, 'Tree Planting Weekend',    make_timestamp(y, 5, 18, 09, 00, 00), make_timestamp(y, 5, 19, 16, 00, 00), 'North Oval', 'Community tree planting drive');
+
+INSERT INTO event_clubs (id, event_id, club_id) VALUES
+                                                    (gen_random_uuid(), e_env_poster,   c_env),
+                                                    (gen_random_uuid(), e_env_cleanup,  c_env),
+                                                    (gen_random_uuid(), e_env_treeweek, c_env);
+
+INSERT INTO event_dependencies (id, event_id, depends_on_event_id)
+VALUES (gen_random_uuid(), e_env_poster, e_env_cleanup);
+
+---------------------------------------------------------------------------
+-- CROSS-CLUB EVENT
+---------------------------------------------------------------------------
+INSERT INTO events (event_id, title, start_time, end_time, location, description)
+VALUES (e_harmony, 'Harmony for the Planet', make_timestamp(y, 5, 25, 13, 00, 00), make_timestamp(y, 5, 25, 18, 00, 00), 'University Greens', 'Joint showcase: music + sustainability');
+
+INSERT INTO event_clubs (id, event_id, club_id)
+VALUES (gen_random_uuid(), e_harmony, c_music),
+       (gen_random_uuid(), e_harmony, c_env);
+
+---------------------------------------------------------------------------
+-- TASKS (Events now exist, safe to reference in dependencies)
+---------------------------------------------------------------------------
+INSERT INTO tasks (task_id, title, description, priority, deadline, completed, created_by, created_at, updated_at)
+VALUES
+    (t_ms_book_aud,  'Book Auditorium', 'Reserve venue for Semester Concert', 'HIGH', make_timestamp(y, 2, 12, 17, 00, 00), TRUE, u_michelle, now(), now()),
+    (t_env_collect,  'Collect Recycling Data', 'Gather bin weight data across faculties', 'HIGH', make_timestamp(y, 2, 28, 17, 00, 00), FALSE, u_luna, now(), now()),
+    (t_ms_stage,     'Stage Setup', 'Audio, risers, seating plan', 'MEDIUM', make_timestamp(y, 5, 24, 18, 00, 00), FALSE, u_michelle, now(), now()),
+    (t_env_ecobooth, 'EcoBooth Logistics', 'Booth materials and volunteer roster', 'HIGH', make_timestamp(y, 5, 24, 18, 00, 00), FALSE, u_luna, now(), now());
+
+INSERT INTO task_clubs (id, task_id, club_id) VALUES
+                                                  (gen_random_uuid(), t_ms_book_aud, c_music),
+                                                  (gen_random_uuid(), t_env_collect, c_env),
+                                                  (gen_random_uuid(), t_ms_stage, c_music),
+                                                  (gen_random_uuid(), t_ms_stage, c_env),
+                                                  (gen_random_uuid(), t_env_ecobooth, c_music),
+                                                  (gen_random_uuid(), t_env_ecobooth, c_env);
+
+INSERT INTO task_dependencies (id, task_id, club_id, depends_on_event_id) VALUES
+                                                                              (gen_random_uuid(), t_env_collect, c_env, e_env_treeweek),
+                                                                              (gen_random_uuid(), t_ms_stage, c_music, e_harmony),
+                                                                              (gen_random_uuid(), t_ms_stage, c_env, e_harmony),
+                                                                              (gen_random_uuid(), t_env_ecobooth, c_music, e_harmony),
+                                                                              (gen_random_uuid(), t_env_ecobooth, c_env, e_harmony);
+
+---------------------------------------------------------------------------
+-- ALEX: 12 MONTHS OF EVENTS WITH RANDOMIZED ATTENDANCE (5–25)
+---------------------------------------------------------------------------
+FOR m IN 1..12 LOOP
+    month_club := CASE ((m - 1) % 3)
+      WHEN 0 THEN c_fit
+      WHEN 1 THEN c_tech
+      ELSE c_cul END;
+
+    month_event := gen_random_uuid();
+    month_title := CASE ((m - 1) % 3)
+      WHEN 0 THEN 'Monthly Bootcamp'
+      WHEN 1 THEN 'Tech Talks Night'
+      ELSE 'Culinary Workshop' END || ' - ' || to_char(make_date(y, m, 1), 'Mon YYYY');
+
+INSERT INTO events (event_id, title, start_time, end_time, location, description)
+VALUES (month_event, month_title,
+        make_timestamp(y, m, 10, 18, 00, 00),
+        make_timestamp(y, m, 10, 20, 00, 00),
+        CASE ((m - 1) % 3)
+    WHEN 0 THEN 'Gym Hall'
+              WHEN 1 THEN 'Innovation Hub'
+              ELSE 'Teaching Kitchen' END,
+            'Recurring monthly session');
+
+INSERT INTO event_clubs (id, event_id, club_id)
+VALUES (gen_random_uuid(), month_event, month_club);
+
+-- Randomized attendance between 5–25 attendees
+FOR i IN 1..(5 + floor(random() * 21))::int LOOP
+      attendee_id := gen_random_uuid();
+INSERT INTO attendance (attendance_id, event_id, first_name, last_name, member_type, timestamp)
+VALUES (
+           attendee_id,
+           month_event,
+           CASE WHEN i = 1 THEN 'Alex' ELSE 'Attendee_' || i::text END,
+           CASE WHEN i = 1 THEN 'Taylor' ELSE 'Demo' END,
+           CASE WHEN i = 1 THEN 'member' ELSE (CASE WHEN random() > 0.7 THEN 'guest' ELSE 'member' END) END,
+           make_timestamp(y, m, 10, 18, (5 * i) % 60, 00)
+       );
+END LOOP;
+END LOOP;
+
+  ---------------------------------------------------------------------------
+  -- SAMPLE QR CODES
+  ---------------------------------------------------------------------------
+INSERT INTO event_qr (qr_id, event_id, qr_code) VALUES
+                                                    (gen_random_uuid(), e_ms_concert,  'MS_CONCERT_QR_PLACEHOLDER'),
+                                                    (gen_random_uuid(), e_harmony,     'HARMONY_QR_PLACEHOLDER'),
+                                                    (gen_random_uuid(), e_env_cleanup, 'CLEANUP_QR_PLACEHOLDER');
+END $$;

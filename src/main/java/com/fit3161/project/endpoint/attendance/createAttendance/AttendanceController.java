@@ -1,5 +1,6 @@
-package com.fit3161.project.endpoint.attendance;
+package com.fit3161.project.endpoint.attendance.createAttendance;
 
+import com.fit3161.project.endpoint.attendance.AttendanceService;
 import com.fit3161.project.endpoint.attendance.request.AttendanceRequest;
 import com.fit3161.project.endpoint.attendance.response.CreateResponse;
 import com.fit3161.project.managers.ClientManager;
