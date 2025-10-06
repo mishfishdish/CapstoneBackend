@@ -1,6 +1,9 @@
 -- V2__populate_data.sql
 -- Flyway migration to seed realistic demo data for SigmaSchedule.
 -- Includes users, clubs, tasks, events, dependencies, and randomized attendance (5–25 per event).
+-- Now includes seasonal spikes:
+--  - Fitness & Wellness Society: February + July (Semester Bootcamp, Winter Wellness Challenge)
+--  - Tech Innovators Club: May + October (Hackathon Season, Startup Pitch Week)
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
@@ -192,13 +195,18 @@ INSERT INTO task_dependencies (id, task_id, club_id, depends_on_event_id) VALUES
 
 ---------------------------------------------------------------------------
 -- 12 MONTHS OF EVENTS WITH RANDOMIZED ATTENDANCE (5–25) PER CLUB
+-- Peaks for Fitness (Feb, Jul) and Tech (May, Oct)
 ---------------------------------------------------------------------------
 FOR v_club_id IN SELECT unnest(ARRAY[c_fit, c_tech, c_cul]) LOOP
                      FOR m IN 1..12 LOOP
                      month_event := gen_random_uuid();
 
 month_title := CASE
-        WHEN v_club_id = c_fit THEN 'Monthly Bootcamp - '  || to_char(make_date(y, m, 1), 'Mon YYYY')
+        WHEN v_club_id = c_fit AND m = 2 THEN 'Semester Bootcamp - ' || to_char(make_date(y, m, 1), 'Mon YYYY')
+        WHEN v_club_id = c_fit AND m = 7 THEN 'Winter Wellness Challenge - ' || to_char(make_date(y, m, 1), 'Mon YYYY')
+        WHEN v_club_id = c_fit THEN 'Monthly Bootcamp - ' || to_char(make_date(y, m, 1), 'Mon YYYY')
+        WHEN v_club_id = c_tech AND m = 5 THEN 'Hackathon Season - ' || to_char(make_date(y, m, 1), 'Mon YYYY')
+        WHEN v_club_id = c_tech AND m = 10 THEN 'Startup Pitch Week - ' || to_char(make_date(y, m, 1), 'Mon YYYY')
         WHEN v_club_id = c_tech THEN 'Tech Talks Night - ' || to_char(make_date(y, m, 1), 'Mon YYYY')
         WHEN v_club_id = c_cul THEN 'Culinary Workshop - ' || to_char(make_date(y, m, 1), 'Mon YYYY')
         ELSE 'Club Event - ' || to_char(make_date(y, m, 1), 'Mon YYYY')
@@ -222,7 +230,13 @@ VALUES (
 INSERT INTO event_clubs (id, event_id, club_id)
 VALUES (gen_random_uuid(), month_event, v_club_id);
 
-FOR i IN 1..(5 + floor(random() * 21))::int LOOP
+FOR i IN 1..(
+        CASE
+          WHEN v_club_id = c_fit AND m IN (2, 7) THEN (20 + floor(random() * 11))  -- 20–30 attendees
+          WHEN v_club_id = c_tech AND m IN (5, 10) THEN (18 + floor(random() * 9))  -- 18–27 attendees
+          ELSE (5 + floor(random() * 21))                                           -- 5–25 normal
+        END
+      )::int LOOP
         attendee_id := gen_random_uuid();
 INSERT INTO attendance (attendance_id, event_id, first_name, last_name, member_type, timestamp)
 VALUES (
@@ -243,7 +257,6 @@ END LOOP;
 FOR v_club_id IN SELECT unnest(ARRAY[c_fit, c_tech, c_cul]) LOOP
                      FOR t_idx IN 1..10 LOOP
                      t_id := gen_random_uuid();
-
 IF v_club_id = c_fit THEN
         IF t_idx <= 8 THEN
           t_completed := TRUE;
@@ -252,7 +265,6 @@ ELSE
           t_completed := FALSE;
           deadline_val := now() + interval '7 days';
 END IF;
-
       ELSIF v_club_id = c_tech THEN
         IF t_idx <= 2 THEN
           t_completed := TRUE;
@@ -264,7 +276,6 @@ ELSE
           t_completed := FALSE;
           deadline_val := now() + interval '10 days';
 END IF;
-
       ELSIF v_club_id = c_cul THEN
         IF t_idx <= 5 THEN
           t_completed := TRUE;
@@ -329,5 +340,4 @@ INSERT INTO event_qr (qr_id, event_id, qr_code) VALUES
                                                     (gen_random_uuid(), e_ms_concert,  'MS_CONCERT_QR_PLACEHOLDER'),
                                                     (gen_random_uuid(), e_harmony,     'HARMONY_QR_PLACEHOLDER'),
                                                     (gen_random_uuid(), e_env_cleanup, 'CLEANUP_QR_PLACEHOLDER');
-
 END $$ LANGUAGE plpgsql;
