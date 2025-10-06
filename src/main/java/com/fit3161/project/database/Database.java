@@ -1,5 +1,6 @@
 package com.fit3161.project.database;
 
+import com.fit3161.project.database.analytics.AnalyticsService;
 import com.fit3161.project.database.attendance.AttendanceRepository;
 import com.fit3161.project.database.attendance.AttendanceService;
 import com.fit3161.project.database.club.ClubRepository;
@@ -26,7 +27,17 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @RequiredArgsConstructor
-public class Database implements UserService, ClubService, EventService, NotificationService, QrService, TasksService, AttendanceService {
+public class Database
+    implements
+        UserService,
+        ClubService,
+        EventService,
+        NotificationService,
+        QrService,
+        TasksService,
+        AttendanceService,
+        AnalyticsService {
+
     private final UserRepository userRepository;
     private final UserClubRepository userClubRepository;
     private final ClubRepository clubRepository;
@@ -39,6 +50,4 @@ public class Database implements UserService, ClubService, EventService, Notific
     private final TaskDependencyRepository taskDependencyRepository;
     private final QrRepository qrRepository;
     private final AttendanceRepository attendanceRepository;
-
-
 }

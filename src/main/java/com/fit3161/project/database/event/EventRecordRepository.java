@@ -20,4 +20,16 @@ public interface EventRecordRepository extends CrudRepository<EventRecord, UUID>
             WHERE uc.user_id = :userId
             """, nativeQuery = true)
     List<Object[]> findEventCountsForUser(@Param("userId") UUID userId);
+
+    @Query(value = """
+            SELECT DISTINCT
+                e.event_id,
+                e.title
+            FROM events e
+            JOIN event_clubs ec ON e.event_id = ec.event_id
+            JOIN user_clubs uc ON ec.club_id = uc.club_id
+            WHERE uc.user_id = :userId
+            ORDER BY e.title
+            """, nativeQuery = true)
+    List<Object[]> findEventsByUserId(@Param("userId") UUID userId);
 }
