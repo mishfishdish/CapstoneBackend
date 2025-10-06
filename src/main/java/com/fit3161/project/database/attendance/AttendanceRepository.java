@@ -3,6 +3,7 @@ package com.fit3161.project.database.attendance;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Query;
+import com.fit3161.project.database.event.EventRecord;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
@@ -59,4 +60,5 @@ public interface AttendanceRepository
         nativeQuery = true
     )
     Double getMonthlyAverageAttendance(@Param("clubId") UUID clubId);
+
 }
