@@ -33,11 +33,8 @@ public interface UserService {
 
     default UserRecord findUser(String username) {
         try {
-            System.out.println("MOO" + username);
             return getUserRepository().findByUserId(UUID.fromString(username));
-        } catch (IllegalArgumentException e) {
-            System.out.println("MEOW");
-
+        } catch (Exception e) {
             return getUserRepository().findByEmail(username);
         }
     }

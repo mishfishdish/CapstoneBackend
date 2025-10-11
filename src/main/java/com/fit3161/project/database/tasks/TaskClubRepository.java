@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface TaskClubRepository extends CrudRepository<TaskClubs, UUID> {
     void removeTaskClubsByTask(TaskRecord taskRecord);
 
-    List<TaskClubs> findTaskClubsById(TaskRecord taskRecord);
+    List<TaskClubs> findTaskClubsByTask(TaskRecord taskRecord);
 
     @Query("SELECT tc.club FROM TaskClubs tc WHERE tc.task = :task")
     List<ClubRecord> findClubsByTask(@Param("task") TaskRecord task);

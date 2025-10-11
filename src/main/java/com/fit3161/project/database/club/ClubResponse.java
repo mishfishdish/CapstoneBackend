@@ -10,5 +10,6 @@ import java.util.UUID;
 @Data
 public class ClubResponse {
     String clubName;
+    String role;
     UUID clubId;
 }

@@ -76,7 +76,9 @@ public class UpdateTaskService {
             }
         } else {
             NotificationRecord existingNotification = database.findNotification(existing);
-            database.deleteNotification(existingNotification);
+            if (existingNotification != null) {
+                database.deleteNotification(existingNotification);
+            }
         }
 
         return null;

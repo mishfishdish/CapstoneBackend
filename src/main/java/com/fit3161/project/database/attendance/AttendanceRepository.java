@@ -64,5 +64,6 @@ public interface AttendanceRepository
 
     List<AttendanceRecord> findAttendanceRecordsByEvent(EventRecord eventRecord);
 
+    void removeAttendanceRecordsByEvent(EventRecord eventRecord);
 
 }

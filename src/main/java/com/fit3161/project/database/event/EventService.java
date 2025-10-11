@@ -51,6 +51,10 @@ public interface EventService {
         getEventDependencyRepository().removeEventDependenciesByEventId(eventRecord);
     }
 
+    default void removeEventDependants(EventRecord eventRecord) {
+        getEventDependencyRepository().removeEventDependenciesByDependEventId(eventRecord);
+    }
+
     default void removeEvent(EventRecord eventRecord) {
         getEventRecordRepository().delete(eventRecord);
     }

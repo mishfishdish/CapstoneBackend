@@ -1,5 +1,6 @@
 package com.fit3161.project.database.tasks;
 
+import com.fit3161.project.database.event.EventRecord;
 import com.fit3161.project.endpoint.general.getActivities.ActivityResponse;
 import com.fit3161.project.endpoint.general.getEvents.EventResponse;
 import com.fit3161.project.endpoint.home.response.Activity;
@@ -55,6 +56,10 @@ public interface TasksService {
         getTaskDependencyRepository().removeTaskDependenciesByTask(taskRecord);
     }
 
+    default void removeTaskDependants(EventRecord eventRecord) {
+        getTaskDependencyRepository().removeTaskDependenciesByDependsOnEvent(eventRecord);
+    }
+
     default void removeTask(TaskRecord taskRecord) {
         getTaskRecordRepository().delete(taskRecord);
     }
@@ -72,12 +77,12 @@ public interface TasksService {
     }
 
 
-    default UUID findTaskDependency(TaskRecord taskRecord) {
-        return getTaskDependencyRepository().findEventDependenciesByTask(taskRecord).getDependsOnEvent().getEventId();
+    default TaskDependencies findTaskDependency(TaskRecord taskRecord) {
+        return getTaskDependencyRepository().findEventDependenciesByTask(taskRecord);
     }
 
     default Stream<UUID> findEventClubIds(TaskRecord eventRecord) {
-        return getTaskClubRepository().findTaskClubsById(eventRecord).stream().map(
+        return getTaskClubRepository().findTaskClubsByTask(eventRecord).stream().map(
                 eventClub -> eventClub.getClub().getClubId());
     }
 

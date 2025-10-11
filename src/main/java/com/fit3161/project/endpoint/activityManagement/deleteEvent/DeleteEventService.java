@@ -32,6 +32,9 @@ public class DeleteEventService {
         database.removeQr(event);
         database.removeClubEvent(event);
         database.removeEventDependencies(event);
+        database.removeEventDependants(event);
+        database.removeTaskDependants(event);
+        database.removeAttendanceRecordsByEvent(event);
 
         NotificationRecord notification = database.findNotification(event);
         if (notification != null) {

@@ -23,7 +23,7 @@ public class TaskDetailsController {
 
     @GetMapping("/api/tasks/{taskId}")
     public ResponseEntity<TaskDetailsResponse> handler(@Valid @PathVariable UUID taskId) {
-        client.setEventId(taskId);
+        client.setTaskId(taskId);
         return new ResponseEntity<>(taskDetailsService.getResponse(), taskDetailsService.getStatus());
     }
 }

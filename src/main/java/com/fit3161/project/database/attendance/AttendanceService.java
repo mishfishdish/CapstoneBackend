@@ -23,4 +23,9 @@ public interface AttendanceService {
     default List<AttendanceRecord> getAttendanceRecords(final EventRecord eventRecord) {
         return getAttendanceRepository().findAttendanceRecordsByEvent(eventRecord);
     }
+
+    default void removeAttendanceRecordsByEvent(EventRecord eventRecord) {
+        getAttendanceRepository().removeAttendanceRecordsByEvent(eventRecord);
+
+    }
 }

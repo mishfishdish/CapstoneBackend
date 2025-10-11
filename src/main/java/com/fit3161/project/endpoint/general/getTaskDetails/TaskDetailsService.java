@@ -1,6 +1,8 @@
 package com.fit3161.project.endpoint.general.getTaskDetails;
 
 import com.fit3161.project.database.Database;
+import com.fit3161.project.database.notification.NotificationRecord;
+import com.fit3161.project.database.tasks.TaskDependencies;
 import com.fit3161.project.database.tasks.TaskRecord;
 import com.fit3161.project.managers.ClientManager;
 import jakarta.transaction.Transactional;
@@ -38,8 +40,14 @@ public class TaskDetailsService {
         response.dueDate(existing.getDeadline());
         response.completed(existing.isCompleted());
         response.clubs(database.findEventClubIds(existing).toList());
-        response.notifyBeforeMinutes(database.findNotification(existing).getNotifyBeforeMinutes());
-        response.parentEventId(database.findTaskDependency(existing));
+        NotificationRecord notification = database.findNotification(existing);
+        if (notification != null) {
+            response.notifyBeforeMinutes(notification.getNotifyBeforeMinutes());
+        }
+        TaskDependencies parentEventId = database.findTaskDependency(existing);
+        if (parentEventId != null) {
+            response.parentEventId(parentEventId.getDependsOnEvent().getEventId());
+        }
 
         return response.build();
     }

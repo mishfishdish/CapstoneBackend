@@ -2,6 +2,7 @@ package com.fit3161.project.endpoint.general.getEventDetails;
 
 import com.fit3161.project.database.Database;
 import com.fit3161.project.database.event.EventRecord;
+import com.fit3161.project.database.notification.NotificationRecord;
 import com.fit3161.project.managers.ClientManager;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.UUID;
 
 @Service
 @Getter
@@ -39,8 +42,15 @@ public class EventDetailsService {
         response.endTime(existing.getEndTime());
         response.location(existing.getLocation());
         response.clubs(database.findEventClubIds(existing).toList());
-        response.notifyBeforeMinutes(database.findNotification(existing).getNotifyBeforeMinutes());
-        response.parentEventId(database.findEventDependency(existing));
+        NotificationRecord notification = database.findNotification(existing);
+        if (notification != null) {
+            response.notifyBeforeMinutes(notification.getNotifyBeforeMinutes());
+        }
+
+        UUID parentEventId = database.findEventDependency(existing);
+        if (parentEventId != null) {
+            response.parentEventId(parentEventId);
+        }
         response.qrCode(database.findQr(existing).getQrCode());
 
 

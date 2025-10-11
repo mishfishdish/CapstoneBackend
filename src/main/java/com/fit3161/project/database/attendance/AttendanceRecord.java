@@ -1,6 +1,5 @@
 package com.fit3161.project.database.attendance;
 
-import com.fit3161.project.database.attendance.enums.MemberType;
 import com.fit3161.project.database.event.EventRecord;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,8 +33,7 @@ public class AttendanceRecord {
     private String lastName;
 
     @Column(name = "MEMBER_TYPE")
-    @Enumerated(EnumType.STRING)
-    private MemberType memberType;
+    private String memberType;
 
     @Column(name = "TIMESTAMP")
     @CreationTimestamp
