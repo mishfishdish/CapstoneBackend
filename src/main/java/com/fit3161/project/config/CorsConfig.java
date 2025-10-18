@@ -7,28 +7,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfig {
-
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(
-                                "http://capstoneapp-frontend.duckdns.org",
-                                "http://localhost:5173",
-                                "http://ec2-13-238-6-95.ap-southeast-2.compute.amazonaws.com",
-                                "https://ec2-13-238-6-95.ap-southeast-2.compute.amazonaws.com"
-                        )
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true); // if you're using cookies
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedOriginPatterns("*")  // ✅ allow all origins
+                        .allowedMethods("*")         // ✅ allow all HTTP methods
+                        .allowedHeaders("*")         // ✅ allow all headers
                         .allowCredentials(true);
             }
         };
     }
 }
-
