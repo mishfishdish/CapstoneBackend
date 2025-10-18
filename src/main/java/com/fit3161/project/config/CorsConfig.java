@@ -14,7 +14,12 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://capstoneapp-frontend.duckdns.org:5000")
+                        .allowedOrigins(
+                                "http://capstoneapp-frontend.duckdns.org",
+                                "http://localhost:5173",
+                                "http://ec2-13-238-6-95.ap-southeast-2.compute.amazonaws.com",
+                                "https://ec2-13-238-6-95.ap-southeast-2.compute.amazonaws.com"
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true); // if you're using cookies
