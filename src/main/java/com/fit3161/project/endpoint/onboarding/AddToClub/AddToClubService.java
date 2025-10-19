@@ -18,14 +18,14 @@ public class AddToClubService {
     private final Database database;
     private final ClientManager client;
 
-    public HttpStatus getStatus(){
+    public HttpStatus getStatus() {
         return HttpStatus.NO_CONTENT;
     }
 
-    public String getResponse(){
+    public String getResponse() {
         final AddClubRequest request = client.getRequestAs(AddClubRequest.class);
 
-        final UserRecord user = database.findUser(request.getUsername());
+        final UserRecord user = database.findUser(request.getEmail());
 
         final ClubRecord club = database.findClub(request.getClubId());
 

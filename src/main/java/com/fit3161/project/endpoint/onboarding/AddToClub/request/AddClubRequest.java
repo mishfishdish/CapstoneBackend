@@ -13,6 +13,6 @@ import java.util.UUID;
 @Setter
 public class AddClubRequest {
     private UUID clubId;
-    private String username;
+    private String email;
     private String role;
 }
